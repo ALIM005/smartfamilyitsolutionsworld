@@ -1,0 +1,50 @@
+@import "tailwindcss";
+@config "../tailwind.config.js";
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: #f8fafc;
+    color: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* বাংলা লেখায় লাইনের উচ্চতা একটু বেশি লাগে */
+  :lang(bn) {
+    line-height: 1.7;
+  }
+
+  ::selection {
+    background-color: #bfdbfe;
+    color: #0f172a;
+  }
+
+  /* কিবোর্ড ব্যবহারকারীদের জন্য ফোকাস রিং */
+  :focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+
+  /* যাদের ডিভাইসে অ্যানিমেশন কমানো সেট করা */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
