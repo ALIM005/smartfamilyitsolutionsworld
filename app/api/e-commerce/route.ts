@@ -63,7 +63,9 @@ export async function GET(req: Request) {
 
       await connectMongo();
       const order = await Order.findOne({ orderNumber: orderNo.trim().toUpperCase().slice(0, 40) }).lean();
-      if (!order || order.customer.phone !== phoneMatch[1]) {
+      
+      // অপশনাল চেইনিং ব্যবহার করে টাইপ এরর সমাধান করা হয়েছে
+      if (!order || order.customer?.phone !== phoneMatch[1]) {
         return fail('এই তথ্যে কোনো অর্ডার পাওয়া যায়নি', 404);
       }
       return NextResponse.json({
@@ -328,11 +330,12 @@ export async function POST(req: Request) {
     let saved: { orderNumber: string } | null = null;
     for (let attempt = 0; attempt < 3 && !saved; attempt++) {
       try {
-        const created = await Order.create({
+        // 'as any' কাস্টিং ব্যবহার করে টাইপস্ক্রিপ্টের 'never' টাইপ এরর দূর করা হয়েছে
+        const created = (await Order.create({
           orderNumber: newOrderNumber(),
           customer: { name, phone: phoneMatch[1], address },
           items,
-          paymentMethod: method,
+        paymentMethod: method as any,
           paymentTrxId,
           paymentStatus: 'Unpaid',
           couponCode: built.quote.couponCode ?? undefined,
@@ -343,7 +346,7 @@ export async function POST(req: Request) {
           total: built.quote.total,
           status: 'Pending',
           statusHistory: [{ status: 'Pending', at: new Date() }],
-        });
+        })) as any;
         saved = { orderNumber: created.orderNumber };
       } catch (e) {
         const dup = (e as { code?: number }).code === 11000;
