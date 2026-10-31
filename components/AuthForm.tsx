@@ -8,8 +8,9 @@ export default function AuthForm() {
   const params = useSearchParams();
 
   const tenant = params.get('tenant') || undefined;
-  const rawNext = params.get('next') || '/';
-  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/';
+  // ডিফল্ট পাথ '/' এর পরিবর্তে '/marketplace' করা হয়েছে
+  const rawNext = params.get('next') || '/marketplace';
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/marketplace';
 
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');

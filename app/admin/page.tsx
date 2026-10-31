@@ -295,7 +295,7 @@ function ProductRow(props: {
       <div className="flex flex-wrap items-center gap-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={p.image} alt="" className="h-16 w-16 rounded-xl bg-slate-100 object-cover" />
-        <div className="min-w-[180px] flex-1">
+        <div className="min-w-[180 px] flex-1">
           <p className="font-bold text-slate-900">{p.name}</p>
           <p className="text-xs text-slate-500">
             {p.category}
@@ -658,7 +658,7 @@ export default function AdminPage() {
       {tab === 'orders' && (
         <section className="space-y-4">
           <div className="flex flex-wrap gap-3">
-            <select className={`${field} max-w-[180px]`} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <select className={`${field} max-w-45`} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">সব স্ট্যাটাস</option>
               {ORDER_STATUSES.map((s) => <option key={s}>{s}</option>)}
             </select>

@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import AuthForm from '@/components/AuthForm';
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Sign in or create account',
   robots: { index: false, follow: false },
 };
 

@@ -1,6 +1,7 @@
 // app/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Calculator from '@/components/Calculator';
 import { COMPANY, products } from '@/lib/products';
 import { CONTACT } from '@/lib/contact';
 
@@ -149,9 +150,9 @@ export default function HomePage() {
       />
 
       {/* HERO BANNER */}
-      <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 py-12 text-white md:py-16">
+      <section className="relative ml-[calc(50%-50vw)] w-screen overflow-hidden bg-linear-to-br from-slate-950 via-blue-950 to-indigo-900 py-12 text-white md:py-16">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_40%)]" />
-        <div className="relative mx-auto max-w-6xl px-14 sm:px-16 md:px-[88px] lg:px-24">
+        <div className="relative mx-auto max-w-6xl px-14 sm:px-16 md:px-22 lg:px-24">
           <div className="grid items-center gap-10 lg:grid-cols-12">
             <div className="space-y-6 lg:col-span-7 text-left">
               <span className="inline-block rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold backdrop-blur sm:text-sm">
@@ -166,13 +167,13 @@ export default function HomePage() {
               <div className="flex flex-wrap gap-3 pt-2">
                 <Link
                   href="/products"
-                  className="rounded-xl bg-white px-6 py-3 font-bold text-slate-900 shadow-lg transition hover:scale-105 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="rounded-xl bg-white px-6 py-3 font-bold text-slate-900 shadow-lg transition hover:scale-105 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   আমাদের সফটওয়্যার
                 </Link>
                 <Link
                   href="/contact"
-                  className="rounded-xl border border-white/60 px-6 py-3 font-bold transition hover:bg-white hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                  className="rounded-xl border border-white/60 px-6 py-3 font-bold transition hover:bg-white hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   যোগাযোগ করুন
                 </Link>
@@ -229,6 +230,19 @@ export default function HomePage() {
         </dl>
       </section>
 
+      {/* LEAD CALCULATOR */}
+      <section aria-labelledby="need" className="rounded-3xl bg-slate-50 px-4 py-10 md:py-14">
+        <div className="mx-auto max-w-xl text-center">
+          <h2 id="need" className="text-3xl font-black text-slate-900">
+            আপনার প্রয়োজন জানান
+          </h2>
+          <p className="mt-2 text-slate-600">
+            তিনটি সহজ ধাপে আপনার লক্ষ্য ও প্রয়োজনীয় সার্ভিস বেছে নিন। আমরা আপনার প্রয়োজন বুঝে পরিকল্পনা জানাব।
+          </p>
+        </div>
+        <Calculator />
+      </section>
+
       {/* SERVICES */}
       <section aria-labelledby="services">
         <div className="mb-8">
@@ -242,7 +256,7 @@ export default function HomePage() {
             <Link
               key={s.title}
               href={s.href}
-              className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             >
               <div className="mb-3 text-4xl" aria-hidden="true">{s.icon}</div>
               <h3 className="mb-1 font-bold text-slate-900 transition group-hover:text-blue-600">{s.title}</h3>
@@ -287,13 +301,18 @@ export default function HomePage() {
 
       {/* MODULES */}
       <section aria-labelledby="modules">
-        <div className="mb-8">
-          <h2 id="modules" className="text-3xl font-black text-slate-900">
-            যা যা তৈরি করে দিই
-          </h2>
-          <p className="mt-2 text-slate-600">
-            ERP, POS, ই-কমার্স ও অটোমেশন। আপনার প্রয়োজন অনুযায়ী যে মডিউল দরকার সেগুলো বেছে নিন।
-          </p>
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 id="modules" className="text-3xl font-black text-slate-900">
+              যা যা তৈরি করে দিই
+            </h2>
+            <p className="mt-2 text-slate-600">
+              ERP, POS, ই-কমার্স ও অটোমেশন। আপনার প্রয়োজন অনুযায়ী যে মডিউল দরকার সেগুলো বেছে নিন।
+            </p>
+          </div>
+          <Link href="/features" className="font-bold text-blue-600 hover:underline">
+            সব ফিচার দেখুন →
+          </Link>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {modules.map((m) => (
@@ -309,102 +328,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* DASHBOARD PREVIEW */}
-      <section aria-labelledby="dashboard" className="rounded-3xl bg-slate-900 p-6 text-white md:p-10 shadow-xl">
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 id="dashboard" className="text-3xl font-black">
-              ব্যবসার ড্যাশবোর্ড
-            </h2>
-            <p className="mt-2 max-w-xl text-slate-300">
-              বিক্রি, স্টক ও অর্ডারের অবস্থা এক স্ক্রিনে। নিচেরটি একটি নমুনা চিত্র।
-            </p>
-          </div>
-          <span className="rounded-full bg-amber-400/20 px-4 py-1.5 text-sm font-bold text-amber-300">
-            নমুনা ডেটা
-          </span>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {dashboardCards.map((c) => (
-            <div key={c.label} className="rounded-2xl border border-white/10 bg-white/5 p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-slate-400">{c.label}</p>
-                  <p className="mt-1 text-2xl font-black">{c.value}</p>
-                </div>
-                <span className="text-4xl" aria-hidden="true">{c.icon}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="mb-3 font-bold">অর্ডার ট্র্যাকিং</p>
-            <ol className="grid grid-cols-5 gap-2">
-              {orderSteps.map((step, i) => (
-                <li
-                  key={step}
-                  className={`rounded-xl p-2 text-center text-[11px] font-bold sm:text-xs ${
-                    i <= 2 ? 'bg-green-600 text-white' : 'bg-white/10 text-slate-400'
-                  }`}
-                >
-                  {step}
-                </li>
-              ))}
-            </ol>
-          </div>
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
-            <p className="mb-3 font-bold">অ্যালার্ট</p>
-            <ul className="space-y-2 text-sm">
-              <li className="flex justify-between rounded-xl bg-red-500/15 px-4 py-2 text-red-200">
-                <span>লো স্টক পণ্য</span>
-                <b>৫টি</b>
-              </li>
-              <li className="flex justify-between rounded-xl bg-amber-500/15 px-4 py-2 text-amber-200">
-                <span>পেন্ডিং অর্ডার</span>
-                <b>৯টি</b>
-              </li>
-              <li className="flex justify-between rounded-xl bg-green-500/15 px-4 py-2 text-green-200">
-                <span>ডেলিভারি সম্পন্ন (আজ)</span>
-                <b>১৭টি</b>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {SHOW_ECOMMERCE_DEMO && (
-          <div className="mt-8 text-center">
-            <Link
-              href="/apps/e-commerce"
-              className="inline-block rounded-xl bg-white px-7 py-3 font-bold text-slate-900 transition hover:bg-slate-100"
-            >
-              ই-কমার্স ডেমো দেখুন
-            </Link>
-          </div>
-        )}
-      </section>
-
-      {/* INTEGRATIONS */}
-      <section aria-labelledby="integrations" className="text-center">
-        <h2 id="integrations" className="text-3xl font-black text-slate-900">
-          পেমেন্ট ও ইন্টিগ্রেশন
-        </h2>
-        <p className="mx-auto mt-2 max-w-2xl text-slate-600">
-          বাংলাদেশের জনপ্রিয় পেমেন্ট, কুরিয়ার ও লগইন মাধ্যম আপনার সফটওয়্যারে যুক্ত করা যায়।
-        </p>
-        <ul className="mt-8 flex flex-wrap justify-center gap-3">
-          {integrations.map((i) => (
-            <li
-              key={i}
-              className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 shadow-sm"
-            >
-              {i}
-            </li>
-          ))}
-        </ul>
-      </section>
 
       {/* PROCESS */}
       <section aria-labelledby="process">
@@ -466,9 +389,9 @@ export default function HomePage() {
       {/* BOTTOM CTA BANNER */}
       <section
         aria-labelledby="cta"
-        className="ml-[calc(50%-50vw)] w-screen bg-gradient-to-r from-blue-600 to-indigo-700 py-12 text-center text-white md:py-16"
+        className="ml-[calc(50%-50vw)] w-screen bg-linear-to-r from-blue-600 to-indigo-700 py-12 text-center text-white md:py-16"
       >
-        <div className="mx-auto max-w-6xl px-14 sm:px-16 md:px-[88px] lg:px-24">
+        <div className="mx-auto max-w-6xl px-14 sm:px-16 md:px-22 lg:px-24">
           <h2 id="cta" className="text-3xl font-black md:text-4xl">
             আপনার ব্যবসার সফটওয়্যার তৈরি করতে চান?
           </h2>
@@ -478,13 +401,13 @@ export default function HomePage() {
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link
               href="/contact"
-              className="rounded-xl bg-white px-8 py-3.5 font-bold text-blue-700 shadow-lg transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="rounded-xl bg-white px-8 py-3.5 font-bold text-blue-700 shadow-lg transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               যোগাযোগ করুন
             </Link>
             <Link
               href="/products"
-              className="rounded-xl border border-white/60 px-8 py-3.5 font-bold transition hover:bg-white hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              className="rounded-xl border border-white/60 px-8 py-3.5 font-bold transition hover:bg-white hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
               প্রোডাক্ট দেখুন
             </Link>

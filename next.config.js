@@ -1,3 +1,8 @@
+const createNextIntlPlugin = require('next-intl/plugin');
+
+// i18n.ts ফাইলের পাথ নির্দিষ্ট করে দেওয়া হলো
+const withNextIntl = createNextIntlPlugin('./i18n.ts');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -34,7 +39,11 @@ const nextConfig = {
   async redirects() {
     // www → www ছাড়া (SEO-তে ডুপ্লিকেট কনটেন্ট এড়াতে)
     // নতুন ডোমেইন যোগ করলে এখানেও একটি এন্ট্রি যোগ করুন
-    const domains = ['smartfamilyitsolutionsworld.com', 'awmearp.com'];
+    const domains = [
+      'smartfamilyitsolutionsworld.com',
+      'awmearp.com',
+      'smartfamilypoint.com',
+    ];
     return domains.map((d) => ({
       source: '/:path*',
       has: [{ type: 'host', value: `www.${d}` }],
@@ -44,4 +53,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+module.exports = withNextIntl(nextConfig);

@@ -23,6 +23,9 @@ export const WHATSAPP_GREETING =
 export const whatsappUrl = `https://wa.me/${CONTACT.whatsappNumber}?text=${encodeURIComponent(WHATSAPP_GREETING)}`;
 export const mailtoUrl = `mailto:${CONTACT.email}`;
 
+// মিটিং বুকিং (Calendly)
+export const CALENDLY_URL = 'https://calendly.com/smartfamilyitsolutionsworld/30min';
+
 // এক লাইনের ঠিকানা (থানা ও বিভাগ জেলার সমান হওয়ায় বাদ দেওয়া হয়েছে)
 export const addressLine = `${CONTACT.address.village}, ${CONTACT.address.postOffice}-${CONTACT.address.postCode}, ${CONTACT.address.district}`;
 

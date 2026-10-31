@@ -287,7 +287,7 @@ export default async function ServiceDetail({ params }: PageProps) {
           <span>{service.title}</span>
         </nav>
 
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-900 p-8 text-white shadow-xl md:p-12">
+        <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-950 via-blue-950 to-indigo-900 p-8 text-white shadow-xl md:p-12">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_40%)]" />
           <div className="relative max-w-3xl">
             <div className="mb-4 text-5xl" aria-hidden="true">{service.icon}</div>
@@ -308,7 +308,7 @@ export default async function ServiceDetail({ params }: PageProps) {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/contact"
-                className="rounded-xl bg-white px-6 py-3 font-bold text-slate-900 shadow-lg transition hover:scale-105 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="rounded-xl bg-white px-6 py-3 font-bold text-slate-900 shadow-lg transition hover:scale-105 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 যোগাযোগ করুন
               </Link>
@@ -316,7 +316,7 @@ export default async function ServiceDetail({ params }: PageProps) {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl border border-white/60 px-6 py-3 font-bold transition hover:bg-white hover:text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                className="rounded-xl border border-white/60 px-6 py-3 font-bold transition hover:bg-white hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               >
                 WhatsApp-এ কথা বলুন
               </a>
@@ -435,7 +435,7 @@ export default async function ServiceDetail({ params }: PageProps) {
       {/* CTA */}
       <section
         aria-labelledby="cta"
-        className="rounded-3xl bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-12 text-center text-white shadow-xl md:py-16"
+        className="rounded-3xl bg-linear-to-r from-blue-600 to-indigo-700 px-6 py-12 text-center text-white shadow-xl md:py-16"
       >
         <h2 id="cta" className="text-3xl font-black md:text-4xl">
           {service.title} নিয়ে কথা বলতে চান?
@@ -446,7 +446,7 @@ export default async function ServiceDetail({ params }: PageProps) {
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link
             href="/contact"
-            className="rounded-xl bg-white px-8 py-3.5 font-bold text-blue-700 shadow-lg transition hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="rounded-xl bg-white px-8 py-3.5 font-bold text-blue-700 shadow-lg transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             যোগাযোগ করুন
           </Link>
@@ -454,7 +454,7 @@ export default async function ServiceDetail({ params }: PageProps) {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-xl border border-white/60 px-8 py-3.5 font-bold transition hover:bg-white hover:text-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="rounded-xl border border-white/60 px-8 py-3.5 font-bold transition hover:bg-white hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
             Chat on WhatsApp
           </a>
@@ -471,7 +471,7 @@ export default async function ServiceDetail({ params }: PageProps) {
             <Link
               key={s}
               href={`/services/${s}`}
-              className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+              className="group block rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             >
               <div className="mb-2 text-3xl" aria-hidden="true">{o.icon}</div>
               <h3 className="font-bold text-slate-900 transition group-hover:text-blue-600">{o.title}</h3>
