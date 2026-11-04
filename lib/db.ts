@@ -1,9 +1,6 @@
 import dns from 'node:dns';
 import mongoose from 'mongoose';
 
-// কিছু ISP/রাউটার SRV DNS আটকে দেয় (querySrv ECONNREFUSED)।
-// শুধু লোকাল ডেভেলপমেন্টে Google ও Cloudflare DNS ব্যবহার হবে,
-// প্রোডাকশনে (Vercel) এটি চলে না।
 if (process.env.NODE_ENV !== 'production') {
   dns.setServers(['8.8.8.8', '1.1.1.1']);
 }
@@ -29,7 +26,6 @@ export async function connectDB() {
         serverSelectionTimeoutMS: 10000,
       })
       .catch((err) => {
-        // ব্যর্থ সংযোগ ক্যাশে রাখা যাবে না, পরের রিকোয়েস্টে আবার চেষ্টা হবে
         cache.promise = null;
         throw err;
       });
@@ -38,3 +34,6 @@ export async function connectDB() {
   cache.conn = await cache.promise;
   return cache.conn;
 }
+
+// ডিফল্ট এক্সপোর্ট হিসেবেও এটি যুক্ত রইল
+export default connectDB;

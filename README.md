@@ -4,35 +4,54 @@ smartfamily-app
 │  │  └─ page.tsx
 │  ├─ api
 │  │  ├─ admin
+│  │  │  ├─ blog
+│  │  │  │  └─ [id]
 │  │  │  ├─ login
 │  │  │  ├─ orders
 │  │  │  │  └─ [id]
-│  │  │  └─ products
-│  │  │     └─ [id]
+│  │  │  ├─ products
+│  │  │  │  └─ [id]
+│  │  │  └─ upload
 │  │  ├─ auth
 │  │  ├─ contact
 │  │  ├─ e-commerce
 │  │  ├─ order
+│  │  ├─ payment
+│  │  │  ├─ cancel
+│  │  │  ├─ fail
+│  │  │  ├─ initiate
+│  │  │  └─ success
 │  │  ├─ products
+│  │  ├─ sundarban
 │  │  └─ sync
 │  ├─ apps
 │  │  ├─ e-commerce
 │  │  │  └─ page.tsx
 │  │  └─ spreadsheet
 │  │     └─ page.tsx
+│  ├─ blog
+│  │  ├─ page.tsx
+│  │  └─ [slug]
+│  │     └─ page.tsx
+│  ├─ cancellation
+│  │  └─ page.tsx
 │  ├─ cart
 │  │  └─ page.tsx
 │  ├─ contact
 │  │  └─ page.tsx
+│  ├─ error.tsx
 │  ├─ features
 │  │  └─ page.tsx
 │  ├─ globals.css
 │  ├─ login
 │  │  └─ page.tsx
 │  ├─ marketplace
-│  │  ├─ admin
-│  │  │  └─ dashboard
-│  │  │     └─ page.tsx
+│  │  ├─ contact
+│  │  │  └─ page.tsx
+│  │  └─ page.tsx
+│  ├─ New folder
+│  ├─ not-found.tsx
+│  ├─ order-success
 │  │  └─ page.tsx
 │  ├─ page.tsx
 │  ├─ privacy
@@ -41,18 +60,30 @@ smartfamily-app
 │  │  ├─ page.tsx
 │  │  └─ [slug]
 │  │     └─ page.tsx
+│  ├─ refund-policy
+│  │  └─ page.tsx
 │  ├─ robots.ts
 │  ├─ services
 │  │  └─ [slug]
 │  │     └─ page.tsx
-│  └─ sitemap.ts
+│  ├─ sitemap.ts
+│  ├─ terms
+│  │  └─ page.tsx
+│  └─ track-order
+│     └─ page.tsx
 ├─ check-db.js
 ├─ components
+│  ├─ admin
+│  │  └─ BlogManager.tsx
 │  ├─ AuthForm.tsx
+│  ├─ BlogClient.tsx
 │  ├─ Calculator.tsx
 │  ├─ ContactForm.tsx
 │  ├─ FeatureExplorer.tsx
-│  └─ LanguageSwitcher.tsx
+│  ├─ LanguageSwitcher.tsx
+│  └─ SiteShell.tsx
+├─ data
+│  └─ postcodes.json
 ├─ favicon.ico
 ├─ get-hosts.js
 ├─ i18n.ts
@@ -61,11 +92,15 @@ smartfamily-app
 │  ├─ admin-auth.ts
 │  ├─ adminProduct.ts
 │  ├─ auth.ts
+│  ├─ blog-server.ts
+│  ├─ blog-validate.ts
+│  ├─ blog.ts
 │  ├─ contact.ts
 │  ├─ db.ts
 │  ├─ email.ts
 │  ├─ features.ts
 │  ├─ mongo.ts
+│  ├─ postcodes.ts
 │  ├─ pricing.ts
 │  ├─ product-input.ts
 │  ├─ products.ts
@@ -77,6 +112,7 @@ smartfamily-app
 │  └─ en.json
 ├─ middleware.ts
 ├─ models
+│  ├─ BlogPost.ts
 │  ├─ ContactMessage.ts
 │  ├─ Order.ts
 │  ├─ Product.ts
@@ -89,8 +125,10 @@ smartfamily-app
 ├─ postcss.config.js
 ├─ public
 │  ├─ images
-│  │  └─ family.jpg
+│  │  ├─ family.jpg
+│  │  └─ logo.png
 │  └─ logo.png
 ├─ README.md
 ├─ tailwind.config.js
-└─ tsconfig.json
+├─ tsconfig.json
+└─ tsconfig.tsbuildinfo

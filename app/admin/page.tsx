@@ -1,9 +1,14 @@
 'use client';
 
 // app/admin/page.tsx
-// স্টোর অ্যাডমিন: প্রোডাক্টের দাম/ডিসকাউন্ট/স্টক/ছবি বদলানো, নতুন প্রোডাক্ট, অর্ডার ও পেমেন্ট স্ট্যাটাস ম্যানেজ।
+// একীভূত স্টোর অ্যাডমিন (আগের /admin এবং /marketplace/admin/dashboard মিলিয়ে):
+//  - প্রোডাক্ট: দাম/ডিসকাউন্ট/স্টক/ছবি বদলানো, নতুন প্রোডাক্ট, লুকানো/মোছা
+//  - অর্ডার: আসল API থেকে অর্ডার, স্ট্যাটাস ও পেমেন্ট স্ট্যাটাস, সারসংক্ষেপ, BDT/USD
+//  - ব্লগ: BlogManager
+// লগইন সার্ভারে যাচাই হয় (/api/admin/login) — কোডে কোনো পাসওয়ার্ড নেই।
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import BlogManager from '@/components/admin/BlogManager';
 
 type AdminProduct = {
   id: string;
@@ -45,10 +50,20 @@ type AdminOrder = {
   createdAt: string | null;
 };
 
+type Tab = 'products' | 'orders' | 'blog';
+type AuthState = 'loading' | 'login' | 'ready' | 'unconfigured';
+type Currency = 'BDT' | 'USD';
+
 const ORDER_STATUSES = ['Pending', 'Processing', 'Packaging', 'Shipped', 'Delivered', 'Cancelled'];
 const PAYMENT_STATUSES = ['Unpaid', 'Paid', 'Refunded'];
+const USD_EXCHANGE_RATE = 120;
 
-const money = (n: number) => `৳ ${Number(n || 0).toLocaleString('en-BD', { maximumFractionDigits: 2 })}`;
+// BDT হলে ৳, USD হলে $ (শুধু দেখানোর জন্য; ইনপুট সবসময় BDT)
+const formatMoney = (n: number, currency: Currency = 'BDT') => {
+  const v = Number(n || 0);
+  if (currency === 'USD') return `$${(v / USD_EXCHANGE_RATE).toFixed(2)}`;
+  return `৳ ${v.toLocaleString('en-BD', { maximumFractionDigits: 2 })}`;
+};
 
 const field =
   'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-blue-300';
@@ -57,11 +72,22 @@ const btn = 'rounded-lg px-4 py-2 text-sm font-bold transition disabled:opacity-
 type ApiResult<T> = { success: boolean; error?: string } & T;
 
 async function api<T>(path: string, init?: RequestInit): Promise<ApiResult<T>> {
-  const res = await fetch(path, {
-    ...init,
-    headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
-    cache: 'no-store',
-  });
+  let res: Response;
+  try {
+    res = await fetch(path, {
+      ...init,
+      headers: { 'Content-Type': 'application/json', ...(init?.headers ?? {}) },
+      cache: 'no-store',
+    });
+  } catch {
+    return { success: false, error: 'সার্ভারের সাথে যোগাযোগ করা যায়নি' } as ApiResult<T>;
+  }
+
+  // সেশন শেষ হলে (401) লগইন স্ক্রিনে ফেরত — বডি যাই হোক
+  if (res.status === 401 && !path.endsWith('/api/admin/login')) {
+    window.dispatchEvent(new Event('sf-admin-401'));
+  }
+
   let data: unknown = {};
   try {
     data = await res.json();
@@ -70,7 +96,6 @@ async function api<T>(path: string, init?: RequestInit): Promise<ApiResult<T>> {
   }
   const out = data as ApiResult<T>;
   if (!res.ok && out.success !== false) return { success: false, error: `Error ${res.status}` } as ApiResult<T>;
-  if (res.status === 401) window.dispatchEvent(new Event('sf-admin-401'));
   return out;
 }
 
@@ -295,7 +320,7 @@ function ProductRow(props: {
       <div className="flex flex-wrap items-center gap-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={p.image} alt="" className="h-16 w-16 rounded-xl bg-slate-100 object-cover" />
-        <div className="min-w-[180 px] flex-1">
+        <div className="min-w-[180px] flex-1">
           <p className="font-bold text-slate-900">{p.name}</p>
           <p className="text-xs text-slate-500">
             {p.category}
@@ -303,8 +328,8 @@ function ProductRow(props: {
             {!p.active && <b className="ml-2 text-amber-700">লুকানো</b>}
           </p>
           <p className="text-xs font-bold text-green-700">
-            গ্রাহক দেখবে: {money(p.finalPrice)}
-            {p.discount > 0 && <span className="ml-1 text-slate-400 line-through">{money(p.price)}</span>}
+            গ্রাহক দেখবে: {formatMoney(p.finalPrice)}
+            {p.discount > 0 && <span className="ml-1 text-slate-400 line-through">{formatMoney(p.price)}</span>}
           </p>
         </div>
 
@@ -363,13 +388,25 @@ function ProductRow(props: {
 
 // ------------------------------------------------------------------ অর্ডার কার্ড
 
-function OrderCard(props: { o: AdminOrder; onChanged: (id: string, patch: Partial<AdminOrder>) => void; notify: (m: string) => void }) {
-  const { o } = props;
+function OrderCard(props: {
+  o: AdminOrder;
+  currency: Currency;
+  onChanged: (id: string, patch: Partial<AdminOrder>) => void;
+  notify: (m: string) => void;
+}) {
+  const { o, currency } = props;
   const [busy, setBusy] = useState(false);
   const locked = o.status === 'Cancelled';
 
+  // ⚠️ সিমুলেশন: আসল SMS গেটওয়ে যুক্ত না করা পর্যন্ত কিছু পাঠানো হয় না
+  const sendSmsNotification = (status: string) => {
+    const message = `Dear customer, your order (${o.orderNumber}) status is now ${status}. Thank you for choosing Smart Family Point!`;
+    props.notify(`[Demo] Notification for ${o.customer.phone}: "${message}"`);
+  };
+
   async function patch(body: { status?: string; paymentStatus?: string }) {
     if (body.status === 'Cancelled' && !confirm(`অর্ডার ${o.orderNumber} বাতিল করবেন? স্টক ফেরত যাবে।`)) return;
+    const wasDelivered = o.status === 'Delivered';
     setBusy(true);
     const r = await api<{ status: string; paymentStatus: string }>(`/api/admin/orders/${o.id}`, {
       method: 'PATCH',
@@ -378,7 +415,8 @@ function OrderCard(props: { o: AdminOrder; onChanged: (id: string, patch: Partia
     setBusy(false);
     if (r.success) {
       props.onChanged(o.id, { status: r.status, paymentStatus: r.paymentStatus });
-      props.notify('আপডেট হয়েছে');
+      if (r.status === 'Delivered' && !wasDelivered) sendSmsNotification('Delivered');
+      else props.notify('আপডেট হয়েছে');
     } else props.notify(r.error ?? 'আপডেট হয়নি');
   }
 
@@ -389,7 +427,7 @@ function OrderCard(props: { o: AdminOrder; onChanged: (id: string, patch: Partia
           <p className="font-black text-slate-900">{o.orderNumber}</p>
           <p className="text-xs text-slate-500">{o.createdAt ? new Date(o.createdAt).toLocaleString('bn-BD') : ''}</p>
         </div>
-        <p className="text-xl font-black text-green-700">{money(o.total)}</p>
+        <p className="text-xl font-black text-green-700">{formatMoney(o.total, currency)}</p>
       </div>
 
       <div className="mt-3 grid gap-4 md:grid-cols-2">
@@ -407,12 +445,12 @@ function OrderCard(props: { o: AdminOrder; onChanged: (id: string, patch: Partia
                 {i.name} × {i.quantity}
                 <span className="text-slate-500">{[i.color, i.size].filter(Boolean).length ? ` (${[i.color, i.size].filter(Boolean).join(', ')})` : ''}</span>
               </span>
-              <b>{money(i.unitPrice * i.quantity)}</b>
+              <b>{formatMoney(i.unitPrice * i.quantity, currency)}</b>
             </li>
           ))}
           <li className="border-t pt-1 text-xs text-slate-500">
-            সাবটোটাল {money(o.subtotal)} · ভ্যাট {money(o.vat)} · ডেলিভারি {money(o.shipping)}
-            {o.discount > 0 ? ` · কুপন ${o.couponCode} −${money(o.discount)}` : ''}
+            সাবটোটাল {formatMoney(o.subtotal, currency)} · ভ্যাট {formatMoney(o.vat, currency)} · ডেলিভারি {formatMoney(o.shipping, currency)}
+            {o.discount > 0 ? ` · কুপন ${o.couponCode} −${formatMoney(o.discount, currency)}` : ''}
           </li>
         </ul>
       </div>
@@ -439,6 +477,13 @@ function OrderCard(props: { o: AdminOrder; onChanged: (id: string, patch: Partia
             ))}
           </select>
         </label>
+        <button
+          type="button"
+          onClick={() => sendSmsNotification(o.status)}
+          className={`${btn} bg-blue-600 text-white hover:bg-blue-700`}
+        >
+          Send Message
+        </button>
       </div>
     </div>
   );
@@ -447,28 +492,40 @@ function OrderCard(props: { o: AdminOrder; onChanged: (id: string, patch: Partia
 // ------------------------------------------------------------------ মূল পেজ
 
 export default function AdminPage() {
-  const [auth, setAuth] = useState<'loading' | 'login' | 'ready' | 'unconfigured'>('loading');
+  const [auth, setAuth] = useState<AuthState>('loading');
   const [password, setPassword] = useState('');
   const [loginErr, setLoginErr] = useState('');
-  const [tab, setTab] = useState<'products' | 'orders'>('products');
-  const [toast, setToast] = useState('');
+  const [tab, setTab] = useState<Tab>('products');
+  const [currency, setCurrency] = useState<Currency>('BDT');
 
+  // টোস্ট (BlogManager এটার ওপর নির্ভর করে, তাই notify স্থিতিশীল থাকতে হবে)
+  const [toast, setToast] = useState('');
+  const toastTimer = useRef<number | null>(null);
+  const notify = useCallback((m: string) => {
+    setToast(m);
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+    toastTimer.current = window.setTimeout(() => setToast(''), 4000);
+  }, []);
+  useEffect(() => () => {
+    if (toastTimer.current) window.clearTimeout(toastTimer.current);
+  }, []);
+
+  // প্রোডাক্ট
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [loadingP, setLoadingP] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
 
+  // অর্ডার
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [orderTotal, setOrderTotal] = useState(0);
   const [loadingO, setLoadingO] = useState(false);
   const [statusFilter, setStatusFilter] = useState('');
-  const [orderQuery, setOrderQuery] = useState('');
+  const [orderQuery, setOrderQuery] = useState(''); // ইনপুটে যা লেখা হচ্ছে
+  const [appliedQuery, setAppliedQuery] = useState(''); // যেটা দিয়ে আসলে খোঁজা হয়েছে
+  const [ordersTick, setOrdersTick] = useState(0); // জোর করে রিফ্রেশ
 
-  const notify = useCallback((m: string) => {
-    setToast(m);
-    window.setTimeout(() => setToast(''), 3000);
-  }, []);
-
+  // সার্ভারে সেশন আছে কিনা দেখা + 401 হলে লগইনে ফেরত
   useEffect(() => {
     api<{ configured: boolean; authenticated: boolean }>('/api/admin/login').then((r) => {
       if (!r.configured) setAuth('unconfigured');
@@ -491,22 +548,27 @@ export default function AdminPage() {
     setLoadingO(true);
     const qs = new URLSearchParams();
     if (statusFilter) qs.set('status', statusFilter);
-    if (orderQuery.trim()) qs.set('q', orderQuery.trim());
+    if (appliedQuery) qs.set('q', appliedQuery);
     const r = await api<{ orders: AdminOrder[]; total: number }>(`/api/admin/orders?${qs.toString()}`);
     setLoadingO(false);
     if (r.success) {
       setOrders(r.orders);
       setOrderTotal(r.total);
     } else notify(r.error ?? 'অর্ডার লোড হয়নি');
-  }, [statusFilter, orderQuery, notify]);
+  }, [statusFilter, appliedQuery, notify]);
 
   useEffect(() => {
-    if (auth === 'ready') loadProducts();
+    if (auth === 'ready') void loadProducts();
   }, [auth, loadProducts]);
 
   useEffect(() => {
-    if (auth === 'ready' && tab === 'orders') loadOrders();
-  }, [auth, tab, loadOrders]);
+    if (auth === 'ready' && tab === 'orders') void loadOrders();
+  }, [auth, tab, loadOrders, ordersTick]);
+
+  function searchOrders() {
+    setAppliedQuery(orderQuery.trim());
+    setOrdersTick((t) => t + 1);
+  }
 
   async function login(e: FormEvent) {
     e.preventDefault();
@@ -522,6 +584,7 @@ export default function AdminPage() {
     await api<object>('/api/admin/login', { method: 'DELETE' });
     setProducts([]);
     setOrders([]);
+    setShowNew(false);
     setAuth('login');
   }
 
@@ -532,6 +595,10 @@ export default function AdminPage() {
   }, [products, search]);
 
   const lowStock = products.filter((p) => p.active && p.stock <= 5).length;
+
+  // অর্ডার সারসংক্ষেপ (বর্তমানে লোড হওয়া তালিকা থেকে; বাতিল অর্ডার বিক্রির হিসাবে ধরা হয় না)
+  const pendingOrders = orders.filter((o) => o.status === 'Pending').length;
+  const totalSales = orders.filter((o) => o.status !== 'Cancelled').reduce((sum, o) => sum + o.total, 0);
 
   if (auth === 'loading') return <p className="py-24 text-center font-bold text-slate-500">লোড হচ্ছে...</p>;
 
@@ -554,7 +621,10 @@ export default function AdminPage() {
     return (
       <div className="mx-auto max-w-sm py-20">
         <form onSubmit={login} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-6 shadow">
-          <h1 className="text-2xl font-black text-slate-900">স্টোর অ্যাডমিন</h1>
+          <div>
+            <h1 className="text-2xl font-black text-slate-900">স্টোর অ্যাডমিন</h1>
+            <p className="mt-1 text-sm text-slate-500">Smart Family Point Control Panel</p>
+          </div>
           <input
             type="password"
             autoFocus
@@ -563,19 +633,30 @@ export default function AdminPage() {
             placeholder="অ্যাডমিন পাসওয়ার্ড"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
-          {loginErr && <p className="text-sm font-bold text-red-600">{loginErr}</p>}
+          {loginErr && <p role="alert" className="text-sm font-bold text-red-600">{loginErr}</p>}
           <button className={`${btn} w-full bg-blue-600 py-3 text-white hover:bg-blue-700`}>লগইন</button>
         </form>
       </div>
     );
   }
 
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'products', label: 'প্রোডাক্ট' },
+    { id: 'orders', label: 'অর্ডার' },
+    { id: 'blog', label: 'ব্লগ' },
+  ];
+
   return (
     <div className="space-y-6 py-6">
       {toast && (
-        <div role="status" className="fixed right-5 top-5 z-50 rounded-xl bg-black px-5 py-3 text-sm font-bold text-white shadow-2xl">
-          {toast}
+        <div
+          role="status"
+          className="fixed right-5 top-5 z-50 flex max-w-md items-start gap-3 rounded-xl bg-black px-5 py-3 text-sm font-bold text-white shadow-2xl"
+        >
+          <span className="break-words">{toast}</span>
+          <button onClick={() => setToast('')} aria-label="বন্ধ করুন" className="text-white/70 hover:text-white">✕</button>
         </div>
       )}
 
@@ -586,17 +667,32 @@ export default function AdminPage() {
             {products.length} টি প্রোডাক্ট{lowStock > 0 && <b className="ml-2 text-red-600">{lowStock} টির স্টক কম</b>}
           </p>
         </div>
-        <button onClick={logout} className={`${btn} border border-slate-300 bg-white hover:bg-slate-100`}>লগআউট</button>
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-500 shadow-sm">
+            Currency:
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value as Currency)}
+              className="cursor-pointer bg-transparent text-xs font-semibold text-slate-800 outline-none"
+            >
+              <option value="BDT">Taka (BDT)</option>
+              <option value="USD">Dollar (USD)</option>
+            </select>
+          </label>
+          <button onClick={logout} className={`${btn} border border-slate-300 bg-white hover:bg-slate-100`}>লগআউট</button>
+        </div>
       </div>
 
-      <div className="flex gap-2">
-        {(['products', 'orders'] as const).map((t) => (
+      <div className="flex gap-2" role="tablist" aria-label="অ্যাডমিন সেকশন">
+        {tabs.map((t) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`${btn} ${tab === t ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`${btn} ${tab === t.id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
           >
-            {t === 'products' ? 'প্রোডাক্ট' : 'অর্ডার'}
+            {t.label}
           </button>
         ))}
       </div>
@@ -608,7 +704,7 @@ export default function AdminPage() {
             <button onClick={() => setShowNew((v) => !v)} className={`${btn} bg-blue-600 text-white hover:bg-blue-700`}>
               {showNew ? 'বন্ধ করুন' : '+ নতুন প্রোডাক্ট'}
             </button>
-            <button onClick={loadProducts} className={`${btn} border border-slate-300 bg-white hover:bg-slate-100`}>রিফ্রেশ</button>
+            <button onClick={() => void loadProducts()} className={`${btn} border border-slate-300 bg-white hover:bg-slate-100`}>রিফ্রেশ</button>
           </div>
 
           {showNew && (
@@ -657,8 +753,26 @@ export default function AdminPage() {
 
       {tab === 'orders' && (
         <section className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+              <p className="text-sm font-medium text-slate-500">মোট অর্ডার</p>
+              <h3 className="mt-1 text-3xl font-bold text-slate-900">{orderTotal}</h3>
+            </div>
+            <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+              <p className="text-sm font-medium text-slate-500">Pending অর্ডার</p>
+              <h3 className="mt-1 text-3xl font-bold text-amber-600">{pendingOrders}</h3>
+            </div>
+            <div className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm">
+              <p className="text-sm font-medium text-slate-500">মোট বিক্রি (বাতিল বাদে)</p>
+              <h3 className="mt-1 text-3xl font-bold text-emerald-600">{formatMoney(totalSales, currency)}</h3>
+            </div>
+          </div>
+          <p className="text-xs text-slate-500">
+            Pending ও মোট বিক্রি নিচের লোড হওয়া তালিকা থেকে হিসাব করা (ফিল্টার/সার্চ দিলে সেই অনুযায়ী বদলাবে)।
+          </p>
+
           <div className="flex flex-wrap gap-3">
-            <select className={`${field} max-w-45`} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+            <select className={`${field} max-w-[180px]`} value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
               <option value="">সব স্ট্যাটাস</option>
               {ORDER_STATUSES.map((s) => <option key={s}>{s}</option>)}
             </select>
@@ -667,9 +781,9 @@ export default function AdminPage() {
               placeholder="অর্ডার নম্বর বা ফোনের শেষ অংশ"
               value={orderQuery}
               onChange={(e) => setOrderQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && loadOrders()}
+              onKeyDown={(e) => e.key === 'Enter' && searchOrders()}
             />
-            <button onClick={loadOrders} className={`${btn} border border-slate-300 bg-white hover:bg-slate-100`}>খুঁজুন / রিফ্রেশ</button>
+            <button onClick={searchOrders} className={`${btn} border border-slate-300 bg-white hover:bg-slate-100`}>খুঁজুন / রিফ্রেশ</button>
             <span className="self-center text-sm text-slate-500">মোট {orderTotal} টি</span>
           </div>
 
@@ -683,6 +797,7 @@ export default function AdminPage() {
                 <OrderCard
                   key={o.id}
                   o={o}
+                  currency={currency}
                   notify={notify}
                   onChanged={(id, patch) => setOrders((list) => list.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
                 />
@@ -691,6 +806,8 @@ export default function AdminPage() {
           )}
         </section>
       )}
+
+      {tab === 'blog' && <BlogManager notify={notify} />}
     </div>
   );
 }
