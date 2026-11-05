@@ -2,15 +2,18 @@ import type { MetadataRoute } from 'next';
 import { headers } from 'next/headers';
 import { getOrigin, getProductByHost, products } from '@/lib/products';
 
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const host = (await headers()).get('host') || '';
   const origin = getOrigin(host);
   const now = new Date();
 
-  // প্রোডাক্টের নিজস্ব ডোমেইন হলে শুধু তার হোমপেজ
+
+  // If it's the product's own domain, only its homepage
   if (getProductByHost(host)) {
     return [{ url: origin, lastModified: now, priority: 1 }];
   }
+
 
   return [
     { url: origin, lastModified: now, priority: 1 },

@@ -5,12 +5,14 @@ import FeatureExplorer from '@/components/FeatureExplorer';
 import { featuresData } from '@/lib/features';
 import { CALENDLY_URL } from '@/lib/contact';
 
+
 export const metadata: Metadata = {
-  title: 'ফিচারসমূহ',
+  title: 'Features',
   description:
-    'ইনভেন্টরি, POS ও ইনভয়েস, অ্যাকাউন্টিং, HRM, CRM, ই-কমার্স, অ্যানালিটিক্স ও সিকিউর লগইন সহ আমাদের ERP ও বিজনেস সফটওয়্যারের সব ফিচার এক জায়গায় দেখুন।',
+    'View all the features of our ERP and business software, including inventory, POS and invoicing, accounting, HRM, CRM, e-commerce, analytics, and secure login, in one place.',
   alternates: { canonical: '/features' },
 };
+
 
 export default function FeaturesPage() {
   return (
@@ -21,32 +23,34 @@ export default function FeaturesPage() {
       >
         <header className="mb-8 text-center">
           <h1 id="features-title" className="text-3xl font-black md:text-4xl">
-            আমাদের ফিচারসমূহ
+            Our Features
           </h1>
           <p className="mx-auto mt-3 max-w-2xl text-slate-300">
-            আপনার প্রয়োজন অনুযায়ী যে মডিউলগুলো দরকার সেগুলো বেছে নেওয়া যায়। বিস্তারিত দেখতে যেকোনো কার্ডে ক্লিক করুন।
+            You can choose the modules you need according to your requirements. Click on any card to see the details.
           </p>
         </header>
 
+
         <FeatureExplorer features={featuresData} />
       </section>
+
 
       <section
         aria-labelledby="features-cta"
         className="rounded-3xl bg-linear-to-r from-blue-600 to-indigo-700 px-6 py-12 text-center text-white shadow-xl"
       >
         <h2 id="features-cta" className="text-3xl font-black">
-          কোন মডিউল আপনার দরকার?
+          Which module do you need?
         </h2>
         <p className="mx-auto mt-3 max-w-xl text-blue-100">
-          আপনার ব্যবসার কাজের ধাপ জানান। আমরা আলোচনা করে প্রয়োজনীয় মডিউল, সময় ও খরচের পরিকল্পনা দেবো।
+          Tell us about your business workflow. We will discuss and provide a plan for the necessary modules, timeline, and cost.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link
             href="/contact"
             className="rounded-xl bg-white px-8 py-3.5 font-bold text-blue-700 shadow-lg transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            যোগাযোগ করুন
+            Contact us
           </Link>
           <a
             href={CALENDLY_URL}
@@ -54,7 +58,7 @@ export default function FeaturesPage() {
             rel="noopener noreferrer"
             className="rounded-xl border border-white/60 px-8 py-3.5 font-bold transition hover:bg-white hover:text-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
           >
-            ৩০ মিনিটের মিটিং বুক করুন
+            Book a 30-minute meeting
           </a>
         </div>
       </section>

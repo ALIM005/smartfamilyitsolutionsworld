@@ -1,16 +1,19 @@
 // app/api/admin/orders/route.ts
-// GET ?status=Pending&q=017...&limit=50&skip=0 → অর্ডার তালিকা (নতুন আগে)
+// GET ?status=Pending&q=017...&limit=50&skip=0 → Order list (newest first)
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-auth';
 import { connectMongo } from '@/lib/mongo';
 import Order, { ORDER_STATUSES } from '@/models/Order';
 
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
 
 export async function GET(req: Request) {
   const denied = requireAdmin(req);
   if (denied) return denied;
+
 
   const url = new URL(req.url);
   const status = url.searchParams.get('status') ?? '';
@@ -18,15 +21,16 @@ export async function GET(req: Request) {
   const limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit')) || 50));
   const skip = Math.max(0, Number(url.searchParams.get('skip')) || 0);
 
+
   const filter: Record<string, unknown> = {};
   if (status) {
     if (!(ORDER_STATUSES as readonly string[]).includes(status)) {
-      return NextResponse.json({ success: false, error: 'অবৈধ স্ট্যাটাস' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid status' }, { status: 400 });
     }
     filter.status = status;
   }
   if (q) {
-    // ফোন বা অর্ডার নম্বর, রেগেক্স ইনজেকশন এড়াতে অক্ষর escape
+    // Phone or order number; escape characters to avoid regex injection
     const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     filter.$or = [
       { orderNumber: new RegExp(`^${safe}`, 'i') },
@@ -34,12 +38,14 @@ export async function GET(req: Request) {
     ];
   }
 
+
   try {
     await connectMongo();
     const [docs, total] = await Promise.all([
       Order.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       Order.countDocuments(filter),
     ]);
+
 
     const orders = docs.map((o) => ({
       id: o._id.toString(),
@@ -66,9 +72,10 @@ export async function GET(req: Request) {
       createdAt: (o as unknown as { createdAt?: Date }).createdAt ?? null,
     }));
 
+
     return NextResponse.json({ success: true, orders, total });
   } catch (error) {
     console.error('[admin orders GET]', error);
-    return NextResponse.json({ success: false, error: 'অর্ডার লোড করা যায়নি' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Orders could not be loaded' }, { status: 500 });
   }
 }

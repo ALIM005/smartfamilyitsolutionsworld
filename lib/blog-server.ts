@@ -5,8 +5,10 @@ import type { LeanBlogDoc } from '@/models/BlogPost';
 import { POSTS, formatDateBn } from '@/lib/blog';
 import type { AdminBlogPostView, BlogPost as BlogPostView } from '@/lib/blog';
 
+
 /** Export combined type so both admin panel and public pages get full fields safely */
 export type FullBlogPost = BlogPostView & AdminBlogPostView;
+
 
 /** Database document → plain JSON-safe object used by pages and the admin panel. */
 export function toPost(doc: LeanBlogDoc): FullBlogPost {
@@ -31,6 +33,7 @@ export function toPost(doc: LeanBlogDoc): FullBlogPost {
   };
 }
 
+
 /** Published posts for the public blog. Falls back to the starter post only if the DB is unreachable. */
 export async function getPublishedPosts(): Promise<BlogPostView[]> {
   try {
@@ -42,6 +45,7 @@ export async function getPublishedPosts(): Promise<BlogPostView[]> {
     return [...POSTS];
   }
 }
+
 
 export async function getPostBySlug(slug: string): Promise<BlogPostView | null> {
   try {

@@ -4,27 +4,30 @@ import ContactForm from '@/components/ContactForm';
 import { COMPANY } from '@/lib/products';
 import { CALENDLY_URL } from '@/lib/contact';
 
+
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'সাপোর্ট বা যেকোনো জিজ্ঞাসার জন্য আমাদের সাথে যোগাযোগ করুন অথবা ৩০ মিনিটের মিটিং বুক করুন।',
+    'Contact us for support or any inquiries, or book a 30-minute meeting.',
   alternates: { canonical: '/contact' },
 };
+
 
 export default function ContactPage() {
   return (
     <div className="mx-auto max-w-xl space-y-8 py-12">
       <div>
-        <h1 className="text-3xl font-black text-slate-900">যোগাযোগ</h1>
+        <h1 className="text-3xl font-black text-slate-900">Contact</h1>
         <p className="mt-2 text-slate-600">
-          সাপোর্ট বা যেকোনো প্রশ্নের জন্য ফর্মটি পূরণ করুন, অথবা ইমেইল করুন:{' '}
+          Fill out the form for support or any questions, or email us at:{' '}
           <a href={`mailto:${COMPANY.email}`} className="text-blue-600 underline">
             {COMPANY.email}
           </a>
         </p>
       </div>
 
-      {/* মিটিং বুকিং */}
+
+      {/* Meeting booking */}
       <section
         aria-labelledby="book-meeting"
         className="rounded-2xl border border-blue-100 bg-blue-50 p-6"
@@ -33,10 +36,10 @@ export default function ContactPage() {
           <div className="text-3xl" aria-hidden="true">📅</div>
           <div className="min-w-0">
             <h2 id="book-meeting" className="text-lg font-black text-slate-900">
-              ৩০ মিনিটের মিটিং বুক করুন
+              Book a 30-minute meeting
             </h2>
             <p className="mt-1 text-sm text-slate-600">
-              আপনার প্রয়োজন নিয়ে সরাসরি কথা বলতে চাইলে সুবিধাজনক সময় বেছে নিন।
+              If you would like to speak directly about your needs, choose a convenient time.
             </p>
             <a
               href={CALENDLY_URL}
@@ -44,16 +47,17 @@ export default function ContactPage() {
               rel="noopener noreferrer"
               className="mt-4 inline-block rounded-lg bg-blue-600 px-5 py-2.5 font-bold text-white shadow transition hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
             >
-              সময় বেছে নিন →
+              Choose a time →
             </a>
           </div>
         </div>
       </section>
 
-      {/* ফর্ম */}
+
+      {/* Form */}
       <section aria-labelledby="send-message">
         <h2 id="send-message" className="mb-4 text-lg font-black text-slate-900">
-          অথবা বার্তা পাঠান
+          Or send a message
         </h2>
         <ContactForm />
       </section>

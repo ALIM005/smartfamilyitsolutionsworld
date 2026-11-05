@@ -53,7 +53,11 @@ smartfamily-app
 │  ├─ not-found.tsx
 │  ├─ order-success
 │  │  └─ page.tsx
+│  ├─ packages
+│  │  └─ page.tsx
 │  ├─ page.tsx
+│  ├─ portfolio
+│  │  └─ page.tsx
 │  ├─ privacy
 │  │  └─ page.tsx
 │  ├─ products
@@ -64,9 +68,12 @@ smartfamily-app
 │  │  └─ page.tsx
 │  ├─ robots.ts
 │  ├─ services
+│  │  ├─ page.tsx
 │  │  └─ [slug]
 │  │     └─ page.tsx
 │  ├─ sitemap.ts
+│  ├─ team
+│  │  └─ page.tsx
 │  ├─ terms
 │  │  └─ page.tsx
 │  └─ track-order
@@ -80,9 +87,12 @@ smartfamily-app
 │  ├─ Calculator.tsx
 │  ├─ ContactForm.tsx
 │  ├─ FeatureExplorer.tsx
+│  ├─ FloatingChat.tsx
 │  ├─ LanguageSwitcher.tsx
-│  └─ SiteShell.tsx
+│  ├─ SiteShell.tsx
+│  └─ ThemeSwitcher.tsx
 ├─ data
+│  ├─ data.ts
 │  └─ postcodes.json
 ├─ favicon.ico
 ├─ get-hosts.js
@@ -109,6 +119,7 @@ smartfamily-app
 │  ├─ session-token.ts
 │  └─ store-config.ts
 ├─ messages
+│  ├─ bn.json
 │  └─ en.json
 ├─ middleware.ts
 ├─ models
@@ -125,6 +136,7 @@ smartfamily-app
 ├─ postcss.config.js
 ├─ public
 │  ├─ images
+│  │  ├─ alim-uddin.jpg
 │  │  ├─ family.jpg
 │  │  └─ logo.png
 │  └─ logo.png

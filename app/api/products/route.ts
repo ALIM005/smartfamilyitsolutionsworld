@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { connectDB as dbConnect } from '@/lib/db';
 import ProductModel from '@/models/Product';
 
+
 export interface Product {
   id: string;
   name: string;
@@ -10,24 +11,28 @@ export interface Product {
   image: string | null;
 }
 
+
 interface ApiSuccess<T> {
   success: true;
   data: T;
 }
+
 
 interface ApiFailure {
   success: false;
   error: string;
 }
 
+
 export async function GET() {
   try {
     await dbConnect();
     
-    // ডাটাবেজ থেকে সব প্রোডাক্ট ফেচ করা হচ্ছে
+    // Fetching all products from the database
     const products = await ProductModel.find({}).sort({ createdAt: -1 });
 
-    // ফ্রন্টএন্ড ইন্টারফেসের সাথে ডেটা ফরম্যাট মিলানো হচ্ছে
+
+    // Matching the data format with the frontend interface
     const formattedProducts: Product[] = products.map((doc: any) => ({
       id: doc._id.toString(),
       name: doc.name || doc.title || '',
@@ -35,10 +40,12 @@ export async function GET() {
       image: doc.image || doc.imageUrl || null,
     }));
 
+
     const response: ApiSuccess<Product[]> = {
       success: true,
       data: formattedProducts,
     };
+
 
     return NextResponse.json(response);
   } catch (error: any) {
@@ -49,16 +56,20 @@ export async function GET() {
       error: error.message || 'Failed to fetch products',
     };
 
+
     return NextResponse.json(failureResponse, { status: 500 });
   }
 }
+
 
 export async function POST(req: Request) {
   try {
     await dbConnect();
     const body = await req.json();
 
+
     const { name, price, image } = body;
+
 
     if (!name || price === undefined) {
       return NextResponse.json(
@@ -67,11 +78,13 @@ export async function POST(req: Request) {
       );
     }
 
+
     const newProduct = await ProductModel.create({
       name,
       price: Number(price),
       image: image || null,
     });
+
 
     const formattedProduct: Product = {
       id: newProduct._id.toString(),
@@ -79,6 +92,7 @@ export async function POST(req: Request) {
       price: newProduct.price,
       image: newProduct.image,
     };
+
 
     return NextResponse.json({ success: true, data: formattedProduct }, { status: 201 });
   } catch (error: any) {

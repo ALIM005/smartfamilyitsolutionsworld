@@ -3,7 +3,7 @@
 import { memo, useCallback, useMemo, useState, useEffect, useRef } from 'react';
 import type { FormEvent } from 'react';
 import Link from 'next/link';
-
+import FloatingChat from '@/components/FloatingChat';
 /*
   Smart Family Point palette
   Blush pink : #FFF4F6 / #FDE6EC / #FBD3DE      Magenta : #B0124F → #D81B7A
@@ -750,8 +750,9 @@ export default function MarketplacePage() {
                     </a>
                   )
                 )}
-                <Link href="/marketplace/admin/dashboard" className={`rounded hover:text-[#E3B964] ${focusRing}`}>
-                  Admin
+                {/* Admin বাটনের পরিবর্তে IT Solutions বাটন */}
+                <Link href="/" className={`rounded hover:text-[#E3B964] ${focusRing}`}>
+                  IT Solutions
                 </Link>
               </nav>
 
@@ -834,8 +835,8 @@ export default function MarketplacePage() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/marketplace/admin/dashboard" onClick={() => setMenuOpen(false)} className={`block rounded py-3 text-[#4A0F2E] hover:text-[#B0124F] ${focusRing}`}>
-                    Admin
+                  <Link href="/" onClick={() => setMenuOpen(false)} className={`block rounded py-3 text-[#4A0F2E] hover:text-[#B0124F] ${focusRing}`}>
+                    💻 IT Solutions
                   </Link>
                 </li>
                 <li className="border-t border-[#F3C6D3] pt-3">
@@ -1112,8 +1113,10 @@ export default function MarketplacePage() {
             </div>
           </div>
         </section>
+        {/* FLOATING CHAT WIDGET */}
+        <FloatingChat />
 
-       {/* ===== Footer ===== */}
+        {/* ===== Footer ===== */}
         <footer id="footer-section" className="border-t-2 border-[#C9A24B] bg-linear-to-b from-[#4A0F2E] to-[#2E0A1C] py-12 text-[#FBD3DE]">
           <div className={container}>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:grid-cols-4 pb-8 border-b border-white/10 text-left">

@@ -473,7 +473,7 @@ export default function EcommercePage() {
   return (
     <div className="py-6">
       {toast && (
-        <div role="status" aria-live="polite" className="fixed right-4 top-4 z-[9999] max-w-xs rounded-2xl bg-black px-5 py-3 text-sm font-bold text-white shadow-2xl">
+        <div role="status" aria-live="polite" className="fixed right-4 top-4 z-9999 max-w-xs rounded-2xl bg-black px-5 py-3 text-sm font-bold text-white shadow-2xl">
           {toast}
         </div>
       )}
@@ -637,7 +637,7 @@ export default function EcommercePage() {
 
       {/* কুইক ভিউ */}
       {quick && (
-        <div className="fixed inset-0 z-[90] overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" onClick={() => setQuickId(null)}>
+        <div className="fixed inset-0 z-90 overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" onClick={() => setQuickId(null)}>
           <div role="dialog" aria-modal="true" aria-label={quick.name} onClick={(e) => e.stopPropagation()} className="mx-auto mt-6 max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl">
             <div className="grid md:grid-cols-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -715,7 +715,7 @@ export default function EcommercePage() {
 
       {/* কার্ট ড্রয়ার */}
       {showCart && (
-        <div className="fixed inset-0 z-[80] bg-black/50 backdrop-blur-sm" onClick={() => setShowCart(false)}>
+        <div className="fixed inset-0 z-80 bg-black/50 backdrop-blur-sm" onClick={() => setShowCart(false)}>
           <aside role="dialog" aria-modal="true" aria-label="কার্ট" onClick={(e) => e.stopPropagation()} className="absolute right-0 top-0 h-full w-full max-w-xl overflow-y-auto bg-white p-5 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-2xl font-black text-slate-900">আপনার কার্ট</h2>
@@ -821,7 +821,7 @@ export default function EcommercePage() {
 
       {/* উইশলিস্ট */}
       {showWishlist && (
-        <div className="fixed inset-0 z-[75] bg-black/50 backdrop-blur-sm" onClick={() => setShowWishlist(false)}>
+        <div className="fixed inset-0 z-75 bg-black/50 backdrop-blur-sm" onClick={() => setShowWishlist(false)}>
           <aside role="dialog" aria-modal="true" aria-label="পছন্দের তালিকা" onClick={(e) => e.stopPropagation()} className="absolute left-0 top-0 h-full w-full max-w-md overflow-y-auto bg-white p-5 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-2xl font-black">পছন্দের তালিকা</h2>
@@ -857,7 +857,7 @@ export default function EcommercePage() {
 
       {/* তুলনা */}
       {showCompare && (
-        <div className="fixed inset-0 z-[70] overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" onClick={() => setShowCompare(false)}>
+        <div className="fixed inset-0 z-70 overflow-y-auto bg-black/60 p-4 backdrop-blur-sm" onClick={() => setShowCompare(false)}>
           <div role="dialog" aria-modal="true" aria-label="প্রোডাক্ট তুলনা" onClick={(e) => e.stopPropagation()} className="mx-auto mt-8 max-w-5xl rounded-3xl bg-white p-6 shadow-2xl">
             <div className="mb-5 flex items-center justify-between">
               <h2 className="text-2xl font-black">প্রোডাক্ট তুলনা</h2>
@@ -897,7 +897,7 @@ export default function EcommercePage() {
 
       {/* অর্ডার সফল */}
       {placed && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
           <div role="dialog" aria-modal="true" aria-label="অর্ডার সম্পন্ন" className="w-full max-w-md rounded-3xl bg-white p-8 text-center shadow-2xl">
             <div className="mb-3 text-6xl">✅</div>
             <h2 className="text-2xl font-black text-slate-900">অর্ডার সম্পন্ন হয়েছে</h2>

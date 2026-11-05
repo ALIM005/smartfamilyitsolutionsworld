@@ -2,9 +2,12 @@ import bcrypt from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 
+
 export const COOKIE_NAME = 'sf_token';
 
+
 export type Session = { uid: string; tenantId: string; email: string };
+
 
 function secret() {
   const s = process.env.JWT_SECRET;
@@ -14,8 +17,10 @@ function secret() {
   return new TextEncoder().encode(s);
 }
 
+
 export const hashPassword = (password: string) => bcrypt.hash(password, 12);
 export const checkPassword = (password: string, hash: string) => bcrypt.compare(password, hash);
+
 
 export async function signToken(session: Session) {
   return new SignJWT({ ...session })
@@ -24,6 +29,7 @@ export async function signToken(session: Session) {
     .setExpirationTime('7d')
     .sign(secret());
 }
+
 
 export async function verifyToken(token: string): Promise<Session | null> {
   try {
@@ -41,11 +47,13 @@ export async function verifyToken(token: string): Promise<Session | null> {
   }
 }
 
+
 export async function getSession(): Promise<Session | null> {
   const store = await cookies();
   const token = store.get(COOKIE_NAME)?.value;
   return token ? verifyToken(token) : null;
 }
+
 
 export function cookieOptions() {
   return {

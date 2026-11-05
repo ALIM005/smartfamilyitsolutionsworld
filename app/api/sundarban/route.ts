@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// অর্ডারের ডেটার জন্য টাইপ ইন্টারফেস
+
+// Type interface for order data
 interface CourierRequestBody {
   recipientName: string;
   address: string;
@@ -8,35 +9,41 @@ interface CourierRequestBody {
   weight: number;
 }
 
+
 export async function POST(req: NextRequest) {
   try {
-    // ১. রিকোয়েস্ট বডি পার্স করা
+    // 1. Parse the request body
     const body: CourierRequestBody = await req.json();
     const { recipientName, address, phone, weight } = body;
 
-    // ২. বেসিক ইনপুট ভ্যালিডেশন
+
+    // 2. Basic input validation
     if (!recipientName || !address || !phone || !weight) {
       return NextResponse.json(
-        { success: false, error: 'সব প্রয়োজনীয় তথ্য (নাম, ঠিকানা, ফোন, ওজন) প্রদান করা বাধ্যতামূলক।' },
+        { success: false, error: 'Providing all required information (name, address, phone, weight) is mandatory.' },
         { status: 400 }
       );
     }
 
-    // ৩. এনভায়রনমেন্ট ভেরিয়েবল চেক করা
+
+    // 3. Check environment variables
     const apiUrl = process.env.SUNDARBAN_API_URL;
     const apiKey = process.env.SUNDARBAN_API_KEY;
+
 
     if (!apiUrl || !apiKey) {
       console.error('Sundarban API configuration is missing in environment variables.');
       return NextResponse.json(
-        { success: false, error: 'সার্ভার কনফিগারেশন ত্রুটি। অনুগ্রহ করে পরবর্তীতে চেষ্টা করুন।' },
+        { success: false, error: 'Server configuration error. Please try again later.' },
         { status: 500 }
       );
     }
 
-    // ৪. সুন্দরবন কুরিয়ার এপিআই কল করা (টাইমআউট সহ সিকিউর ফেচ)
+
+    // 4. Call the Sundarban Courier API (secure fetch with timeout)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // ১৫ সেকেন্ড টাইমআউট
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15-second timeout
+
 
     try {
       const response = await fetch(`${apiUrl}/create-booking`, {
@@ -54,42 +61,47 @@ export async function POST(req: NextRequest) {
         signal: controller.signal,
       });
 
+
       clearTimeout(timeoutId);
       const data = await response.json();
 
-      // ৫. সুন্দরবন এপিআই ফেইল করলে হ্যান্ডেল করা
+
+      // 5. Handle if the Sundarban API fails
       if (!response.ok) {
         return NextResponse.json(
           { 
             success: false, 
-            error: data.message || 'কুরিয়ার বুকিং ব্যর্থ হয়েছে।' 
+            error: data.message || 'Courier booking failed.' 
           }, 
           { status: response.status }
         );
       }
 
-      // ৬. সফল রেসপন্স রিটার্ন করা
+
+      // 6. Return the successful response
       return NextResponse.json({
         success: true,
-        message: 'কুরিয়ার বুকিং সফলভাবে সম্পন্ন হয়েছে।',
+        message: 'Courier booking has been completed successfully.',
         data,
       }, { status: 200 });
+
 
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
       if (fetchError.name === 'AbortError') {
         return NextResponse.json(
-          { success: false, error: 'কুরিয়ার সার্ভিসের সাথে সংযোগ করতে সময় বেশি লেগেছে (Timeout)।' },
+          { success: false, error: 'It took too long to connect to the courier service (Timeout).' },
           { status: 504 }
         );
       }
       throw fetchError;
     }
 
+
   } catch (error: any) {
     console.error('Sundarban API Route Error:', error);
     return NextResponse.json(
-      { success: false, error: 'অভ্যন্তরীণ সার্ভার ত্রুটি (Internal Server Error) ঘটেছে।' },
+      { success: false, error: 'An internal server error has occurred.' },
       { status: 500 }
     );
   }

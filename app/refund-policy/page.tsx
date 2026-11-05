@@ -2,13 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { COMPANY } from '@/lib/products';
 
+
 export const metadata: Metadata = {
   title: 'Refund & Return Policy | Smart Family IT Solutions World',
   description: 'Refund, return and cancellation policy for Smart Family IT Solutions World and Smart Family Point.',
 };
 
+
 export default function RefundPolicyPage() {
-  const lastUpdated = 'নভেম্বর ২০২৬';
+  const lastUpdated = 'November 2026';
+
 
   return (
     <div className="min-h-screen bg-[#FFF4F6] text-[#2E0A1C] py-12 px-4 sm:px-6 lg:px-8">
@@ -20,12 +23,13 @@ export default function RefundPolicyPage() {
             Refund & Return Policy
           </h1>
           <p className="text-sm text-[#E3B964] italic">
-            রিফান্ড, রিটার্ন এবং পণ্য ফেরত প্রদান সংক্রান্ত নীতিমালা
+            Policies regarding refunds, returns, and product returns
           </p>
           <p className="text-xs text-[#FBD3DE]/80 mt-3">
-            সর্বশেষ হালনাগাদ: {lastUpdated}
+            Last updated: {lastUpdated}
           </p>
         </div>
+
 
         {/* Content Body */}
         <div className="p-6 sm:p-10 space-y-8 text-gray-800 leading-relaxed text-sm sm:text-base">
@@ -33,50 +37,53 @@ export default function RefundPolicyPage() {
           {/* Section 1 */}
           <section>
             <h2 className="text-xl font-bold text-[#4A0F2E] mb-3 border-b-2 border-[#F3C6D3] pb-1">
-              ১. রিটার্ন বা পণ্য ফেরত নীতি (Return Policy)
+              1. Return Policy
             </h2>
             <p className="mb-2">
-              আমাদের প্ল্যাটফর্ম থেকে ক্রিত পণ্য বা সার্ভিসের ক্ষেত্রে নির্দিষ্ট শর্ত সাপেক্ষে রিটার্ন বা পরিবর্তনের সুযোগ রয়েছে:
+              For products or services purchased from our platform, there is an opportunity for return or exchange subject to certain conditions:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-700 pl-2">
-              <li>পণ্য ডেলিভারি পাওয়ার পর সর্বোচ্চ ৩ থেকে ৭ দিনের মধ্যে রিটার্নের আবেদন করতে হবে।</li>
-              <li>পণ্যটি অব্যবহৃত, ত্রুটিহীন এবং মূল প্যাকেজিংয়ে থাকতে হবে।</li>
-              <li>ডিজিটাল সফটওয়্যার লাইসেন্স বা সাবস্ক্রিপশনের ক্ষেত্রে পলিসি আলাদা হতে পারে (অ্যাক্টিভ হওয়ার পর সাধারণত রিফান্ডযোগ্য নয়)।</li>
+              <li>A return request must be submitted within a maximum of 3 to 7 days after receiving the product delivery.</li>
+              <li>The product must be unused, defect-free, and in its original packaging.</li>
+              <li>For digital software licenses or subscriptions, the policy may be different (generally not refundable after activation).</li>
             </ul>
           </section>
+
 
           {/* Section 2 */}
           <section>
             <h2 className="text-xl font-bold text-[#4A0F2E] mb-3 border-b-2 border-[#F3C6D3] pb-1">
-              ২. রিফান্ড বা টাকা ফেরত প্রক্রিয়া (Refund Process)
+              2. Refund Process
             </h2>
             <p className="mb-2">
-              যদি আপনার রিফান্ড অনুরোধ অনুমোদিত হয়, তবে টাকা ফেরতের প্রক্রিয়াটি যেভাবে সম্পন্ন হবে:
+              If your refund request is approved, the refund process will be completed as follows:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-700 pl-2">
-              <li>অনলাইন পেমেন্ট (SSLCommerz / MFS) বা কার্ডের মাধ্যমে পেমেন্ট করা থাকলে নির্দিষ্ট ট্রানজেকশনের বিপরীতে ৭ থেকে ১০ কার্যদিবসের মধ্যে সংশ্লিষ্ট অ্যাকাউন্ট বা কার্ডে টাকা ফেরত পাঠানো হবে।</li>
-              <li>ক্যাশ অন ডেলিভারির ক্ষেত্রে ব্যাংক ট্রান্সফার বা মোবাইল ফাইন্যান্সিয়াল সার্ভিসের (বিকাশ/নগদ) মাধ্যমে রিফান্ড প্রদান করা হবে।</li>
-              <li>গেটেওয়ে চার্জ বা প্রসেসিং ফি (যদি প্রযোজ্য হয়) বাদ দিয়ে মূল পণ্যের মূল্য রিফান্ড করা হতে পারে।</li>
+              <li>If payment was made via online payment (SSLCommerz / MFS) or card, the money will be refunded to the respective account or card within 7 to 10 business days against the specific transaction.</li>
+              <li>In the case of Cash on Delivery, the refund will be provided via bank transfer or mobile financial services (bKash/Nagad).</li>
+              <li>The original product price may be refunded, excluding gateway charges or processing fees (if applicable).</li>
             </ul>
           </section>
+
 
           {/* Section 3 */}
           <section>
             <h2 className="text-xl font-bold text-[#4A0F2E] mb-3 border-b-2 border-[#F3C6D3] pb-1">
-              ৩. অর্ডার বাতিলকরণ নীতি (Cancellation Policy)
+              3. Cancellation Policy
             </h2>
             <p>
-              অর্ডার কনফার্ম হওয়ার পর পণ্য শিপিং বা ডিজিটাল সার্ভিস প্রভিশনিং হওয়ার পূর্বে আপনি যেকোনো সময় অর্ডার ক্যানসেল করতে পারবেন। অর্ডার ক্যানসেলের জন্য অবিলম্বে আমাদের কাস্টমার সাপোর্ট বা হটলাইনে যোগাযোগ করতে হবে।
+              After an order is confirmed, you can cancel the order at any time before the product is shipped or digital service provisioning begins. To cancel an order, you must immediately contact our customer support or hotline.
             </p>
           </section>
+
 
           {/* Contact Box */}
           <section className="bg-[#FFF4F6] p-6 rounded-xl border border-[#F3C6D3]">
             <h2 className="text-lg font-bold text-[#4A0F2E] mb-2">
-              রিফান্ড ও রিটার্ন সংক্রান্ত সহায়তা
+              Refund and return support
             </h2>
             <p className="text-sm text-gray-700 mb-3">
-              রিফান্ড বা রিটার্ন সংক্রান্ত যেকোনো সহায়তার জন্য আমাদের সাথে যোগাযোগ করুন:
+              Contact us for any support regarding refunds or returns:
             </p>
             <div className="text-sm space-y-1 font-medium text-gray-800">
               <p>🏢 <strong>{COMPANY.name}</strong></p>
@@ -90,13 +97,14 @@ export default function RefundPolicyPage() {
             </div>
           </section>
 
+
           {/* Footer Navigation */}
           <div className="flex flex-wrap items-center justify-between pt-6 border-t border-gray-200 gap-4 text-sm font-semibold">
             <Link 
               href="/" 
               className="text-[#B0124F] hover:text-[#4A0F2E] transition-colors"
             >
-              ← হোমপেজে ফিরে যান
+              ← Back to homepage
             </Link>
             <div className="space-x-4">
               <Link href="/terms" className="text-gray-600 hover:text-[#B0124F]">
@@ -107,6 +115,7 @@ export default function RefundPolicyPage() {
               </Link>
             </div>
           </div>
+
 
         </div>
       </div>

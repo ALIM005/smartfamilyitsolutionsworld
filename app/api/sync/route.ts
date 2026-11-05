@@ -3,10 +3,12 @@ import { connectDB } from '@/lib/db';
 import SheetData from '@/models/SheetData';
 import { getSession } from '@/lib/auth';
 
-const TENANT = 'spreadsheet'; // শুধু এই প্রোডাক্টের ইউজাররা এই API ব্যবহার করতে পারবে
+
+const TENANT = 'spreadsheet'; // Only users of this product will be able to use this API
 const MAX_ROWS = 200;
 const MAX_COLS = 26;
 const MAX_CELL = 1000;
+
 
 function validateSheet(c: unknown): string[][] | null {
   if (!Array.isArray(c) || c.length === 0 || c.length > MAX_ROWS) return null;
@@ -19,10 +21,12 @@ function validateSheet(c: unknown): string[][] | null {
   return c as string[][];
 }
 
+
 export async function GET() {
   const session = await getSession();
   if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   if (session.tenantId !== TENANT) return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+
 
   try {
     await connectDB();
@@ -30,14 +34,16 @@ export async function GET() {
     return NextResponse.json({ email: session.email, data: sheet?.content ?? [] });
   } catch (err) {
     console.error('[sync:get]', err);
-    return NextResponse.json({ message: 'সার্ভারে সমস্যা হয়েছে।' }, { status: 500 });
+    return NextResponse.json({ message: 'There was a problem with the server.' }, { status: 500 });
   }
 }
+
 
 export async function POST(req: NextRequest) {
   const session = await getSession();
   if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   if (session.tenantId !== TENANT) return NextResponse.json({ message: 'Forbidden' }, { status: 403 });
+
 
   let body: any;
   try {
@@ -46,8 +52,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Invalid request' }, { status: 400 });
   }
 
+
   const content = validateSheet(body?.content);
-  if (!content) return NextResponse.json({ message: 'শিটের ডাটা সঠিক নয়।' }, { status: 400 });
+  if (!content) return NextResponse.json({ message: 'The sheet data is not valid.' }, { status: 400 });
+
 
   try {
     await connectDB();
@@ -59,6 +67,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[sync:post]', err);
-    return NextResponse.json({ message: 'সার্ভারে সমস্যা হয়েছে।' }, { status: 500 });
+    return NextResponse.json({ message: 'There was a problem with the server.' }, { status: 500 });
   }
 }

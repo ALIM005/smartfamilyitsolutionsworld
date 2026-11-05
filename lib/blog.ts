@@ -1,11 +1,14 @@
 // lib/blog.ts — blog data (replace POSTS with a database / CMS query later)
 
+
 export type CategorySlug = 'announcement' | 'update' | 'offer' | 'guide';
+
 
 export interface Bilingual {
   en: string;
   bn: string;
 }
+
 
 export interface BlogPost {
   id?: string;
@@ -27,15 +30,16 @@ export interface BlogPost {
   href?: string; // set when the post has its own page, e.g. '/blog/first-post'
 }
 
+
 export interface AdminBlogPost {
   id?: string;
   slug: string;
   title: Bilingual;
-  excerpt: Bilingual; // অ্যাডমিন ফর্মে এক্সেস করার জন্য যুক্ত করা হয়েছে
-  content?: Bilingual; // অ্যাডমিন ফর্মে এক্সেস করার জন্য যুক্ত করা হয়েছে
+  excerpt: Bilingual; // Added for access in the admin form
+  content?: Bilingual; // Added for access in the admin form
   category: CategorySlug;
   dateISO: string;
-  tags: string[]; // অ্যাডমিন ফর্মের ট্যাগ হ্যান্ডেল করার জন্য যুক্ত করা হয়েছে
+  tags: string[]; // Added to handle the admin form's tags
   featured?: boolean;
   published?: boolean;
   coverImage?: string;
@@ -43,16 +47,19 @@ export interface AdminBlogPost {
   images?: string[];
 }
 
+
 export interface AdminBlogPostView extends AdminBlogPost {
   likes: number;
 }
 
+
 export const CATEGORIES: Record<CategorySlug, Bilingual> = {
-  announcement: { en: 'Announcement', bn: 'ঘোষণা' },
-  update: { en: 'Update', bn: 'আপডেট' },
-  offer: { en: 'Offer', bn: 'অফার' },
-  guide: { en: 'Guide', bn: 'গাইড' },
+  announcement: { en: 'Announcement', bn: 'Announcement' },
+  update: { en: 'Update', bn: 'Update' },
+  offer: { en: 'Offer', bn: 'Offer' },
+  guide: { en: 'Guide', bn: 'Guide' },
 };
+
 
 export function formatDateBn(dateISO: string): string {
   const date = new Date(dateISO);
@@ -63,32 +70,35 @@ export function formatDateBn(dateISO: string): string {
   }).format(date);
 }
 
+
 export function getYouTubeId(url: string): string | null {
   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
   const match = url.match(regExp);
   return match && match[2].length === 11 ? match[2] : null;
 }
 
+
 export function postHref(post: BlogPost): string {
   return post.href || `/blog/${post.slug}`;
 }
 
-// নতুন পোস্ট যোগ করতে এই অ্যারেতে একটি অবজেক্ট যোগ করুন
+
+// To add a new post, add an object to this array
 export const POSTS: readonly BlogPost[] = [
   {
     slug: 'first-post',
-    title: { en: 'First Blog Post', bn: 'প্রথম ব্লগ পোস্ট' },
+    title: { en: 'First Blog Post', bn: 'First Blog Post' },
     excerpt: {
       en: 'Read this post in full to learn more about our new products and offers.',
-      bn: 'আমাদের নতুন প্রোডাক্ট এবং অফার সম্পর্কে বিস্তারিত জানতে এই পোস্টটি সম্পূর্ণ পড়ুন।',
+      bn: 'Read this post in full to learn more about our new products and offers.',
     },
     content: {
       en: 'This is the first paragraph of our blog post in English.\n\nThis is the second paragraph with more details.',
-      bn: 'এটি আমাদের ব্লগ পোস্টের প্রথম প্যারাগ্রাফ বাংলায়।\n\nএটি বিস্তারিত সহ দ্বিতীয় প্যারাগ্রাফ।',
+      bn: 'This is the first paragraph of our blog post in Bangla.\n\nThis is the second paragraph with more details.',
     },
     category: 'update',
     dateISO: '2026-11-01',
-    dateBn: 'নভেম্বর ১, ২০২৬',
+    dateBn: 'November 1, 2026',
     readMinutes: 2,
     tags: ['Products', 'Offers'],
     likes: 0,

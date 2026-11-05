@@ -1,9 +1,11 @@
 'use client';
 
+
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+
 
 /*
   Smart Family Point – shared page shell (header + footer)
@@ -12,17 +14,20 @@ import { usePathname } from 'next/navigation';
   Files: public/images/logo.png
 */
 
+
 const BRAND = 'Smart Family Point';
 const TAGLINE = 'Together for a Better Life';
 const LOGO_IMAGE = '/images/logo.png';
 const HOME_PATH = '/marketplace';
+
 
 interface NavItem {
   label: string;
   href: string;
 }
 
-// 📌 এখানে Contact লিংকটি ঠিক করা হয়েছে সরাসরি /contact পেজে পয়েন্ট করার জন্য
+
+// 📌 The Contact link has been fixed here to point directly to the /contact page
 const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Home', href: HOME_PATH },
   { label: 'Shop', href: `${HOME_PATH}#products` },
@@ -30,6 +35,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Blog', href: '/blog' },
   { label: 'Contact', href: '/contact' },
 ];
+
 
 const focusRing =
   'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B0124F] focus-visible:ring-offset-2';
@@ -39,10 +45,12 @@ const goldBtn =
   'bg-linear-to-r from-[#E3B964] to-[#C9A24B] text-[#2E0A1C] shadow-md shadow-black/10 transition hover:brightness-105 motion-reduce:transition-none';
 const container = 'mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-10 2xl:px-16';
 
+
 export default function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const year = new Date().getFullYear();
+
 
   useEffect(() => {
     const previous = document.body.style.overflow;
@@ -52,7 +60,9 @@ export default function SiteShell({ children }: { children: ReactNode }) {
     };
   }, []);
 
+
   const isActive = (href: string): boolean => !href.includes('#') && pathname === href;
+
 
   return (
     <div className="fixed inset-0 z-60 overflow-y-auto overflow-x-hidden overscroll-contain bg-linear-to-b from-[#FFF4F6] via-[#FFF9FA] to-[#FDE6EC] text-[#2E0A1C]">
@@ -81,6 +91,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
                 </span>
               </Link>
 
+
               <div className="flex items-center gap-2 sm:gap-3">
                 <Link
                   href="/cart"
@@ -103,6 +114,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
               </div>
             </div>
           </div>
+
 
           {/* Burgundy nav bar (desktop) */}
           <div className="hidden bg-linear-to-r from-[#4A0F2E] via-[#6E0F3D] to-[#4A0F2E] text-white md:block">
@@ -129,6 +141,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
               </Link>
             </div>
           </div>
+
 
           {/* Mobile menu */}
           {menuOpen && (
@@ -157,8 +170,10 @@ export default function SiteShell({ children }: { children: ReactNode }) {
           )}
         </header>
 
+
         {/* ===== Page content ===== */}
         <div className="flex-1">{children}</div>
+
 
         {/* ===== Footer (Updated with Quick Links & Contact Info) ===== */}
         <footer className="mt-12 border-t-2 border-[#C9A24B] bg-linear-to-b from-[#4A0F2E] to-[#2E0A1C] py-10 text-[#FBD3DE]">
@@ -179,9 +194,10 @@ export default function SiteShell({ children }: { children: ReactNode }) {
               </div>
               <p className="text-xs italic text-[#E3B964] mb-3">{TAGLINE}</p>
               <p className="text-xs text-[#FBD3DE]/80 leading-relaxed">
-                ওয়েব ও সফটওয়্যার সলিউশন, ERP, ই-কমার্স এবং স্মার্ট বিজনেস অ্যাপ্লিকেশন প্রদানকারী ডাইনামিক প্ল্যাটফর্ম।
+                A dynamic platform providing web and software solutions, ERP, e-commerce, and smart business applications.
               </p>
             </div>
+
 
             {/* Column 2: Quick Links */}
             <div>
@@ -195,6 +211,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
                 <li><Link href="/privacy" className="hover:text-white">Privacy Policy</Link></li>
               </ul>
             </div>
+
 
             {/* Column 3: Contact Info */}
             <div>
@@ -216,6 +233,7 @@ export default function SiteShell({ children }: { children: ReactNode }) {
               </div>
             </div>
           </div>
+
 
           <div className="mt-8 border-t border-[#6E0F3D] pt-4 text-center text-xs text-[#FBD3DE]/60">
             &copy; {year} {BRAND}. All rights reserved.

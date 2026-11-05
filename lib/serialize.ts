@@ -1,8 +1,10 @@
 // lib/serialize.ts
-// ডাটাবেসের ডকুমেন্টকে ব্রাউজারে পাঠানোর উপযোগী (ObjectId → string) আকারে রূপান্তর।
+// Converts a database document into a browser-friendly form (ObjectId → string).
 import { unitPriceAfterDiscount } from './pricing';
 
+
 type IdLike = { toString(): string };
+
 
 export type ProductLike = {
   _id: IdLike;
@@ -25,6 +27,7 @@ export type ProductLike = {
   active?: boolean | null;
 };
 
+
 export type PublicProduct = {
   id: string;
   slug: string;
@@ -46,6 +49,7 @@ export type PublicProduct = {
   flashSale: boolean;
   active: boolean;
 };
+
 
 export function toProduct(p: ProductLike): PublicProduct {
   const discount = p.discount ?? 0;

@@ -2,13 +2,16 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { COMPANY } from '@/lib/products';
 
+
 export const metadata: Metadata = {
   title: 'Cancellation Policy | Smart Family IT Solutions World',
   description: 'Order cancellation and product/service revocation policy for Smart Family IT Solutions World.',
 };
 
+
 export default function CancellationPage() {
-  const lastUpdated = 'নভেম্বর ২০২৬';
+  const lastUpdated = 'November 2026';
+
 
   return (
     <div className="min-h-screen bg-[#FFF4F6] text-[#2E0A1C] py-12 px-4 sm:px-6 lg:px-8">
@@ -20,12 +23,13 @@ export default function CancellationPage() {
             Cancellation Policy
           </h1>
           <p className="text-sm text-[#E3B964] italic">
-            অর্ডার বাতিলকরণ ও সেবা পরিহার সংক্রান্ত নীতিমালা
+            Policies regarding order cancellation and service revocation
           </p>
           <p className="text-xs text-[#FBD3DE]/80 mt-3">
-            সর্বশেষ হালনাগাদ: {lastUpdated}
+            Last updated: {lastUpdated}
           </p>
         </div>
+
 
         {/* Content Body */}
         <div className="p-6 sm:p-10 space-y-8 text-gray-800 leading-relaxed text-sm sm:text-base">
@@ -33,50 +37,53 @@ export default function CancellationPage() {
           {/* Section 1 */}
           <section>
             <h2 className="text-xl font-bold text-[#4A0F2E] mb-3 border-b-2 border-[#F3C6D3] pb-1">
-              ১. অর্ডার ক্যান্সেলেশন বা বাতিলকরণের নিয়ম (Order Cancellation)
+              1. Order Cancellation Rules
             </h2>
             <p className="mb-2">
-              গ্রাহক হিসেবে আপনার অর্ডার বাতিল করার পূর্ণ অধিকার রয়েছে, তবে তা নির্দিষ্ট কিছু শর্ত ও সময়ের মধ্যে হতে হবে:
+              As a customer, you have the full right to cancel your order, but it must be done within certain conditions and timeframes:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-700 pl-2">
-              <li>পণ্য বা সার্ভিস অর্ডারের পর যদি আপনি তা বাতিল করতে চান, তবে পণ্য শিপিং (Shipping) হওয়ার আগেই আমাদের সাথে যোগাযোগ করতে হবে।</li>
-              <li>যদি কোনো ফিজিক্যাল প্রোডাক্ট ইতিমধ্যে কুরিয়ার বা ডেলিভারিতে চলে যায়, তবে ক্যান্সেলেশন পলিসি কার্যকর হবে না; সেক্ষেত্রে পণ্য হাতে পেয়ে রিটার্ন পলিসি অনুসরণ করতে হবে।</li>
-              <li>ডিজিটাল সফটওয়্যার বা সার্ভিস প্রভিশনিং শুরু হয়ে গেলে সাধারণত অর্ডার বাতিল করা যায় না।</li>
+              <li>If you wish to cancel a product or service order after placing it, you must contact us before the product is shipped.</li>
+              <li>If a physical product has already been sent via courier or is out for delivery, the cancellation policy will not apply; in that case, you must follow the return policy after receiving the product.</li>
+              <li>Once digital software or service provisioning has started, the order generally cannot be cancelled.</li>
             </ul>
           </section>
+
 
           {/* Section 2 */}
           <section>
             <h2 className="text-xl font-bold text-[#4A0F2E] mb-3 border-b-2 border-[#F3C6D3] pb-1">
-              ২. কোম্পানি কর্তৃক অর্ডার বাতিল (Cancellation by Authority)
+              2. Order Cancellation by the Company
             </h2>
             <p className="mb-2">
-              অনাকাঙ্ক্ষিত পরিস্থিতির কারণে <strong>{COMPANY.name}</strong> যেকোনো অর্ডার বাতিল করার অধিকার সংরক্ষণ করে:
+              Due to unforeseen circumstances, <strong>{COMPANY.name}</strong> reserves the right to cancel any order:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-700 pl-2">
-              <li>পণ্যের স্টক না থাকা বা কারিগরি ত্রুটির কারণে মূল্য ভুল প্রদর্শিত হলে।</li>
-              <li>পেমেন্ট গেটওয়ে (SSLCommerz) থেকে পেমেন্ট ভেরিফিকেশন সফলভাবে সম্পন্ন না হলে।</li>
-              <li>প্রদানকৃত ডেলিভারি ঠিকানা সন্দেহজনক বা অসম্পূর্ণ বলে মনে হলে।</li>
+              <li>If the product is out of stock or the price is displayed incorrectly due to a technical error.</li>
+              <li>If payment verification from the payment gateway (SSLCommerz) is not successfully completed.</li>
+              <li>If the provided delivery address appears suspicious or incomplete.</li>
             </ul>
           </section>
+
 
           {/* Section 3 */}
           <section>
             <h2 className="text-xl font-bold text-[#4A0F2E] mb-3 border-b-2 border-[#F3C6D3] pb-1">
-              ৩. ক্যান্সেলেশনের পর পেমেন্ট রিফান্ড
+              3. Payment Refund After Cancellation
             </h2>
             <p>
-              অনলাইন পেমেন্ট সম্পন্ন করার পর যদি আপনার অর্ডার সফলভাবে ক্যানসেল করা হয়, তবে আমাদের রিফান্ড নীতি অনুযায়ী ৭-১০ কার্যদিবসের মধ্যে আপনার সংশ্লিষ্ট অ্যাকাউন্টে টাকা ফেরত প্রদান করা হবে।
+              If your order is successfully cancelled after completing an online payment, the money will be refunded to your respective account within 7-10 business days according to our refund policy.
             </p>
           </section>
+
 
           {/* Contact Box */}
           <section className="bg-[#FFF4F6] p-6 rounded-xl border border-[#F3C6D3]">
             <h2 className="text-lg font-bold text-[#4A0F2E] mb-2">
-              অর্ডার বাতিল করতে দ্রুত যোগাযোগ করুন
+              Contact us quickly to cancel an order
             </h2>
             <p className="text-sm text-gray-700 mb-3">
-              জরুরি ভিত্তিতে কোনো অর্ডার ক্যানসেল করতে বা তথ্য জানতে যোগাযোগ করুন:
+              To cancel an order urgently or to get information, please contact:
             </p>
             <div className="text-sm space-y-1 font-medium text-gray-800">
               <p>🏢 <strong>{COMPANY.name}</strong></p>
@@ -90,13 +97,14 @@ export default function CancellationPage() {
             </div>
           </section>
 
+
           {/* Footer Navigation */}
           <div className="flex flex-wrap items-center justify-between pt-6 border-t border-gray-200 gap-4 text-sm font-semibold">
             <Link 
               href="/" 
               className="text-[#B0124F] hover:text-[#4A0F2E] transition-colors"
             >
-              ← হোমপেজে ফিরে যান
+              ← Back to homepage
             </Link>
             <div className="space-x-4">
               <Link href="/terms" className="text-gray-600 hover:text-[#B0124F]">
@@ -110,6 +118,7 @@ export default function CancellationPage() {
               </Link>
             </div>
           </div>
+
 
         </div>
       </div>

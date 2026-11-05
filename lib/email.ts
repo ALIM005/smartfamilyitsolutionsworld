@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 
+
 export function escapeHtml(s: string) {
   return s
     .replace(/&/g, '&amp;')
@@ -9,7 +10,9 @@ export function escapeHtml(s: string) {
     .replace(/'/g, '&#39;');
 }
 
+
 type SendArgs = { to: string; subject: string; html: string; replyTo?: string };
+
 
 export async function sendEmail({ to, subject, html, replyTo }: SendArgs) {
   const key = process.env.RESEND_API_KEY;

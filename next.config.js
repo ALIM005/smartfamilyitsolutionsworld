@@ -1,13 +1,16 @@
 const createNextIntlPlugin = require('next-intl/plugin');
 
-// i18n.ts ফাইলের পাথ নির্দিষ্ট করে দেওয়া হলো
+
+// Specifies the path to the i18n.ts file
 const withNextIntl = createNextIntlPlugin('./i18n.ts');
+
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+
 
   async headers() {
     const securityHeaders = [
@@ -25,10 +28,11 @@ const nextConfig = {
       },
     ];
 
+
     return [
-      // সব পেজে সিকিউরিটি হেডার
+      // Security headers for all pages
       { source: '/:path*', headers: securityHeaders },
-      // API রেসপন্স যেন কখনো ক্যাশ না হয় (সেশন/ইউজার ডাটা আছে)
+      // API responses should never be cached (they contain session/user data)
       {
         source: '/api/:path*',
         headers: [{ key: 'Cache-Control', value: 'no-store, max-age=0' }],
@@ -36,9 +40,10 @@ const nextConfig = {
     ];
   },
 
+
   async redirects() {
-    // www → www ছাড়া (SEO-তে ডুপ্লিকেট কনটেন্ট এড়াতে)
-    // নতুন ডোমেইন যোগ করলে এখানেও একটি এন্ট্রি যোগ করুন
+    // www → without www (to avoid duplicate content in SEO)
+    // When adding a new domain, add an entry here as well
     const domains = [
       'smartfamilyitsolutionsworld.com',
       'awmearp.com',
@@ -52,5 +57,6 @@ const nextConfig = {
     }));
   },
 };
+
 
 module.exports = withNextIntl(nextConfig);

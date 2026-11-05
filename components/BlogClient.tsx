@@ -1,33 +1,41 @@
 'use client';
 
+
 import { memo, useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { CATEGORIES, postHref } from '@/lib/blog';
 import type { BlogPost, CategorySlug } from '@/lib/blog';
 
+
 /*
   Smart Family Point – Blog (bilingual: English large, Bangla small)
   Blush #FFF4F6/#FDE6EC/#FBD3DE · Magenta #B0124F→#D81B7A · Plum #4A0F2E/#2E0A1C · Gold #C9A24B/#E3B964
 */
 
+
 type SortOption = 'latest' | 'popular';
 type CategoryFilter = 'all' | CategorySlug;
 
+
 const LIKED_KEY = 'blog_liked_posts';
 const SAVED_KEY = 'blog_saved_posts';
+
 
 const focusRing =
   'focus:outline-none focus-visible:ring-2 focus-visible:ring-[#B0124F] focus-visible:ring-offset-2';
 const gradientBtn =
   'bg-linear-to-r from-[#B0124F] to-[#D81B7A] text-white shadow-md shadow-[#B0124F]/30 transition hover:from-[#990F44] hover:to-[#C21769] motion-reduce:transition-none';
 
+
 const dateFormatter = new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' });
 const formatDateEn = (iso: string): string => dateFormatter.format(new Date(`${iso}T00:00:00Z`));
 const toBnDigits = (n: number): string => n.toLocaleString('bn-BD');
 
+
 const toggleIn = (list: string[], value: string): string[] =>
   list.includes(value) ? list.filter((x) => x !== value) : [...list, value];
+
 
 function readList(key: string): string[] {
   try {
@@ -38,6 +46,7 @@ function readList(key: string): string[] {
   }
 }
 
+
 function writeList(key: string, value: string[]): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
@@ -45,6 +54,7 @@ function writeList(key: string, value: string[]): void {
     /* storage unavailable (private mode) – ignore */
   }
 }
+
 
 /* ---------- Bilingual text: English large, Bangla small ---------- */
 function Bi({
@@ -67,6 +77,7 @@ function Bi({
     </>
   );
 }
+
 
 const Pill = memo(function Pill({
   active,
@@ -95,6 +106,7 @@ const Pill = memo(function Pill({
   );
 });
 
+
 const Icon = ({ d, filled = false }: { d: string; filled?: boolean }) => (
   <svg
     className="h-4 w-4"
@@ -113,6 +125,7 @@ const HEART = 'M12 21s-8-5.2-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 5.8-8 11
 const BOOKMARK = 'M6 4h12v17l-6-4-6 4V4z';
 const SHARE = 'M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v14';
 
+
 /* ---------- Post card ---------- */
 interface PostCardProps {
   post: BlogPost;
@@ -125,6 +138,7 @@ interface PostCardProps {
   onShare: (post: BlogPost) => void;
   onTag: (tag: string) => void;
 }
+
 
 const PostCard = memo(function PostCard({
   post,
@@ -140,6 +154,7 @@ const PostCard = memo(function PostCard({
   const category = CATEGORIES[post.category];
   const likeCount = post.likes + (liked ? 1 : 0);
   const actionCls = `inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition motion-reduce:transition-none ${focusRing}`;
+
 
   return (
     <article
@@ -179,18 +194,22 @@ const PostCard = memo(function PostCard({
           </span>
         </div>
 
+
         <h2 className={`font-serif font-bold text-[#2E0A1C] ${featured ? 'text-2xl sm:text-3xl' : 'text-xl'}`}>
           <Bi en={post.title.en} bn={post.title.bn} bnClass="font-sans !text-[0.6em] font-medium text-[#7A5566]" />
         </h2>
+
 
         <p className="mt-3 text-[#4A0F2E]">
           <span className="block text-sm sm:text-base">{post.excerpt.en}</span>
           <span lang="bn" className="mt-1 block text-xs text-[#7A5566] sm:text-sm">{post.excerpt.bn}</span>
         </p>
 
+
         <p className="mt-3 text-xs text-[#7A5566]">
-          {post.readMinutes} min read · <span lang="bn">পড়তে {toBnDigits(post.readMinutes)} মিনিট</span>
+          {post.readMinutes} min read · <span lang="bn">Read in {toBnDigits(post.readMinutes)} minutes</span>
         </p>
+
 
         {post.tags.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2">
@@ -207,6 +226,7 @@ const PostCard = memo(function PostCard({
             ))}
           </ul>
         )}
+
 
         <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-[#F3C6D3] pt-4">
           <button
@@ -247,13 +267,14 @@ const PostCard = memo(function PostCard({
             className={`ml-auto rounded-full px-4 py-2 text-xs font-semibold ${gradientBtn} ${focusRing}`}
           >
             Read more →
-            <span lang="bn" className="ml-1 text-[10px] opacity-90">বিস্তারিত</span>
+            <span lang="bn" className="ml-1 text-[10px] opacity-90">Details</span>
           </Link>
         </div>
       </div>
     </article>
   );
 });
+
 
 /* ---------- Page UI ---------- */
 export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
@@ -268,7 +289,9 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
   const [copiedSlug, setCopiedSlug] = useState<string>('');
   const [announcement, setAnnouncement] = useState<string>('');
 
+
   const deferredSearch = useDeferredValue(search);
+
 
   // Restore the visitor's likes/saves after mount (no hydration mismatch)
   useEffect(() => {
@@ -288,8 +311,10 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
     return () => window.clearTimeout(timer);
   }, [copiedSlug]);
 
+
   const handleLike = useCallback((slug: string): void => setLiked((prev) => toggleIn(prev, slug)), []);
   const handleSave = useCallback((slug: string): void => setSaved((prev) => toggleIn(prev, slug)), []);
+
 
   const handleShare = useCallback(async (post: BlogPost): Promise<void> => {
     const url = `${window.location.origin}/blog#${post.slug}`;
@@ -300,11 +325,12 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
       }
       await navigator.clipboard.writeText(url);
       setCopiedSlug(post.slug);
-      setAnnouncement('Link copied. লিংক কপি হয়েছে।');
+      setAnnouncement('Link copied. The link has been copied.');
     } catch {
       /* share dismissed or clipboard blocked – nothing to do */
     }
   }, []);
+
 
   /* Derived data (real, not hard-coded) */
   const categoryCounts = useMemo(() => {
@@ -315,13 +341,16 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
     return counts;
   }, [posts]);
 
+
   const trendingTags = useMemo(() => {
     const counts = new Map<string, number>();
     posts.forEach((p) => p.tags.forEach((t) => counts.set(t, (counts.get(t) ?? 0) + 1)));
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
   }, [posts]);
 
+
   const filtersActive = Boolean(deferredSearch.trim() || category !== 'all' || tag || savedOnly);
+
 
   const visible = useMemo(() => {
     const q = deferredSearch.trim().toLowerCase();
@@ -346,9 +375,11 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
     });
   }, [posts, deferredSearch, category, tag, savedOnly, saved, sort, liked]);
 
+
   // Featured card only when there are several posts and no filter is applied
   const featuredPost = !filtersActive && posts.length > 1 ? (visible.find((p) => p.featured) ?? visible[0]) : null;
   const gridPosts = featuredPost ? visible.filter((p) => p.slug !== featuredPost.slug) : visible;
+
 
   const clearFilters = (): void => {
     setSearch('');
@@ -356,6 +387,7 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
     setTag('');
     setSavedOnly(false);
   };
+
 
   const renderCard = (post: BlogPost, featured = false) => (
     <PostCard
@@ -371,6 +403,7 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
       onTag={setTag}
     />
   );
+
 
   return (
     <>
@@ -392,17 +425,18 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
               Our <span className="italic text-[#FBD3DE]">Blog</span>
             </span>
             <span lang="bn" className="mt-2 block font-sans text-lg font-medium text-[#FDE6EC] sm:text-xl">
-              আমাদের ব্লগ
+              Our Blog
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-[#FDE6EC]">
             <span className="block text-base sm:text-lg">Browse our latest posts, articles and updates.</span>
             <span lang="bn" className="mt-1 block text-xs opacity-90 sm:text-sm">
-              এখানে আমাদের সমস্ত সাম্প্রতিক পোস্ট, আর্টিকেল এবং আপডেট দেখতে পাবেন।
+              Here you can see all our recent posts, articles, and updates.
             </span>
           </p>
         </div>
       </section>
+
 
       <main className="mx-auto w-full max-w-[1920px] px-4 py-10 sm:px-6 sm:py-14 lg:px-10 2xl:px-16">
         {/* ===== Controls ===== */}
@@ -410,7 +444,7 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
               <label htmlFor="blog-search" className="mb-1.5 block text-[#4A0F2E]">
-                <Bi en="Search posts" bn="পোস্ট খুঁজুন" enClass="text-sm font-bold" bnClass="text-xs" />
+                <Bi en="Search posts" bn="Search posts" enClass="text-sm font-bold" bnClass="text-xs" />
               </label>
               <div className="relative">
                 <svg className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#B590A0]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
@@ -422,20 +456,21 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
                   type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Title, topic or tag… / শিরোনাম, বিষয় বা ট্যাগ…"
+                  placeholder="Title, topic or tag… / Title, topic or tag…"
                   className="w-full rounded-2xl border border-[#F3C6D3] bg-[#FFFAFB] py-3 pl-12 pr-4 text-sm text-[#2E0A1C] placeholder:text-[#B590A0] focus:border-[#B0124F] focus:outline-none focus:ring-2 focus:ring-[#B0124F]/25"
                 />
               </div>
             </div>
             <div className="flex flex-wrap gap-2" role="group" aria-label="Sort posts">
-              <Pill active={sort === 'latest'} en="Latest" bn="সর্বশেষ" onClick={() => setSort('latest')} />
-              <Pill active={sort === 'popular'} en="Popular" bn="জনপ্রিয়" onClick={() => setSort('popular')} />
-              <Pill active={savedOnly} en="Saved" bn="সংরক্ষিত" onClick={() => setSavedOnly((v) => !v)} />
+              <Pill active={sort === 'latest'} en="Latest" bn="Latest" onClick={() => setSort('latest')} />
+              <Pill active={sort === 'popular'} en="Popular" bn="Popular" onClick={() => setSort('popular')} />
+              <Pill active={savedOnly} en="Saved" bn="Saved" onClick={() => setSavedOnly((v) => !v)} />
             </div>
           </div>
 
+
           <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filter by category">
-            <Pill active={category === 'all'} en="All" bn="সব" onClick={() => setCategory('all')} />
+            <Pill active={category === 'all'} en="All" bn="All" onClick={() => setCategory('all')} />
             {(Object.keys(CATEGORIES) as CategorySlug[])
               .filter((slug) => categoryCounts[slug])
               .map((slug) => (
@@ -449,10 +484,11 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
               ))}
           </div>
 
+
           {trendingTags.length > 0 && (
             <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-[#F3C6D3] pt-4">
               <span className="text-[#4A0F2E]">
-                <Bi en="Trending topics" bn="জনপ্রিয় বিষয়" enClass="text-xs font-bold uppercase tracking-wider" bnClass="text-[10px]" />
+                <Bi en="Trending topics" bn="Popular topics" enClass="text-xs font-bold uppercase tracking-wider" bnClass="text-[10px]" />
               </span>
               {trendingTags.map(([name, count]) => (
                 <button
@@ -471,18 +507,20 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
           )}
         </section>
 
+
         {/* ===== Result summary ===== */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-sm text-[#4A0F2E]">
           <p aria-live="polite">
             <strong>{visible.length}</strong> {visible.length === 1 ? 'post' : 'posts'}
-            <span lang="bn" className="ml-2 text-xs text-[#7A5566]">{toBnDigits(visible.length)}টি পোস্ট</span>
+            <span lang="bn" className="ml-2 text-xs text-[#7A5566]">{toBnDigits(visible.length)} posts</span>
           </p>
           {filtersActive && (
             <button type="button" onClick={clearFilters} className={`rounded-full border border-[#B0124F] px-4 py-1.5 text-xs font-semibold text-[#B0124F] hover:bg-[#FDE6EC] ${focusRing}`}>
-              Clear filters <span lang="bn" className="ml-1 text-[10px]">ফিল্টার মুছুন</span>
+              Clear filters <span lang="bn" className="ml-1 text-[10px]">Clear filters</span>
             </button>
           )}
         </div>
+
 
         {/* ===== Posts ===== */}
         {featuredPost && (
@@ -491,11 +529,12 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
           </section>
         )}
 
+
         {visible.length === 0 ? (
           <div className="rounded-3xl border-2 border-dashed border-[#E3B964] bg-white/70 px-6 py-14 text-center">
             <p className="text-4xl" aria-hidden="true">🔍</p>
             <p className="mt-3 font-serif text-xl font-bold text-[#4A0F2E]">No posts found</p>
-            <p lang="bn" className="mt-1 text-sm text-[#7A5566]">কোনো পোস্ট পাওয়া যায়নি।</p>
+            <p lang="bn" className="mt-1 text-sm text-[#7A5566]">No posts were found.</p>
             {filtersActive && (
               <button type="button" onClick={clearFilters} className={`mt-5 rounded-full px-5 py-2 text-sm font-semibold ${gradientBtn} ${focusRing}`}>
                 Clear filters
@@ -512,12 +551,13 @@ export default function BlogClient({ posts }: { posts: readonly BlogPost[] }) {
                 <div className="flex h-full min-h-64 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#E3B964] bg-white/60 p-6 text-center">
                   <span className="mb-2 text-3xl text-[#C9A24B]" aria-hidden="true">✦</span>
                   <p className="font-serif text-lg font-bold text-[#4A0F2E]">More posts coming soon</p>
-                  <p lang="bn" className="mt-1 text-sm text-[#7A5566]">শীঘ্রই আসছে নতুন পোস্ট</p>
+                  <p lang="bn" className="mt-1 text-sm text-[#7A5566]">New posts coming soon</p>
                 </div>
               </li>
             )}
           </ul>
         )}
+
 
         <div role="status" aria-live="polite" className="sr-only">
           {announcement}

@@ -1,12 +1,14 @@
 // app/apps/e-commerce/layout.tsx
-// পেজ নিজে 'use client' হওয়ায় SEO মেটাডেটা এখানে থাকে
+// Since the page itself is 'use client', the SEO metadata is here
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
+
 export const metadata: Metadata = {
-  title: 'অনলাইন শপ | Smart Family IT Solutions World',
-  description: 'প্রোডাক্ট দেখুন, কার্টে যোগ করুন এবং bKash, Nagad, Rocket বা ক্যাশ অন ডেলিভারিতে অর্ডার করুন।',
+  title: 'Online Shop | Smart Family IT Solutions World',
+  description: 'View products, add them to your cart, and order with bKash, Nagad, Rocket, or Cash on Delivery.',
 };
+
 
 export default function EcommerceLayout({ children }: { children: ReactNode }) {
   return <>{children}</>;

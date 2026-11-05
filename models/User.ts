@@ -1,5 +1,6 @@
 import { Schema, models, model } from 'mongoose';
 
+
 const UserSchema = new Schema(
   {
     tenantId: { type: String, required: true, index: true },
@@ -11,7 +12,9 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
-// একই ইমেইল ভিন্ন প্রোডাক্টে আলাদা অ্যাকাউন্ট হতে পারবে
+
+// The same email can have separate accounts in different products
 UserSchema.index({ tenantId: 1, email: 1 }, { unique: true });
+
 
 export default models.User || model('User', UserSchema);

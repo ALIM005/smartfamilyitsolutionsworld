@@ -1,27 +1,33 @@
 const fs = require('fs');
 
+
 const FILE = '.env.local';
 const text = fs.readFileSync(FILE, 'utf8');
 const m = text.match(/^MONGODB_URI=(.*)$/m);
 
+
 if (!m) {
-  console.log('.env.local-এ MONGODB_URI পাওয়া যায়নি');
+  console.log('MONGODB_URI was not found in .env.local');
   process.exit(1);
 }
+
 
 const raw = m[1].trim().replace(/^["']|["']$/g, '');
 const parsed = raw.match(/^mongodb\+srv:\/\/(.+)@([^@/?]+)(\/[^?]*)?(\?.*)?$/);
 
+
 if (!parsed) {
-  console.log('লিংকটি mongodb+srv:// ধরনের নয়, বদলানোর দরকার নেই।');
+  console.log('The link is not of the mongodb+srv:// type; no change is needed.');
   process.exit(0);
 }
+
 
 const userinfo = parsed[1];
 const host = parsed[2];
 const dbName = ((parsed[3] || '').replace(/^\//, '')) || 'smartfamily';
 
-// DNS-over-HTTPS: ISP-র DNS পোর্ট আটকালেও HTTPS চলে
+
+// DNS-over-HTTPS: HTTPS works even if the ISP blocks the DNS port
 async function ask(name, type) {
   const sources = [
     { url: `https://dns.google/resolve?name=${name}&type=${type}`, headers: {} },
@@ -36,44 +42,51 @@ async function ask(name, type) {
       const j = await r.json();
       if (j.Answer && j.Answer.length) return j.Answer;
     } catch {
-      // পরের উৎস চেষ্টা করুন
+      // Try the next source
     }
   }
   return [];
 }
 
+
 (async () => {
   const srv = await ask(`_mongodb._tcp.${host}`, 'SRV');
   const txt = await ask(host, 'TXT');
+
 
   const hosts = srv.map((a) => {
     const p = a.data.trim().split(/\s+/);
     return `${p[3].replace(/\.$/, '')}:${p[2]}`;
   });
 
+
   if (!hosts.length) {
-    console.log('সার্ভারের ঠিকানা পাওয়া যায়নি। Atlas-এর ক্লাস্টারের নাম ঠিক আছে কি না দেখুন।');
+    console.log('Server addresses were not found. Check whether the Atlas cluster name is correct.');
     process.exit(1);
   }
+
 
   const opts = txt.length
     ? txt[0].data.replace(/^"|"$/g, '').replace(/" "/g, '')
     : 'authSource=admin';
 
+
   const newUri = `mongodb://${userinfo}@${hosts.join(',')}/${dbName}?tls=true&${opts}&retryWrites=true&w=majority`;
 
-  // আসল srv লিংক আলাদা কী-তে রাখা হয় (অ্যাপ এটি পড়ে না, Vercel-এর জন্য কাজে লাগবে)
+
+  // The original srv link is kept in a separate key (the app does not read it; it will be useful for Vercel)
   const replaced = text.replace(
     m[0],
     () => `MONGODB_URI_SRV=${raw}\nMONGODB_URI=${newUri}`
   );
   fs.writeFileSync(FILE, replaced);
 
-  console.log('সফল। .env.local আপডেট হয়েছে।');
-  console.log('ক্লাস্টার হোস্ট :', host);
-  console.log('সার্ভার সংখ্যা   :', hosts.length);
-  console.log('ডাটাবেস নাম     :', dbName);
+
+  console.log('Success. .env.local has been updated.');
+  console.log('Cluster host      :', host);
+  console.log('Number of servers :', hosts.length);
+  console.log('Database name     :', dbName);
 })().catch((e) => {
-  console.log('ব্যর্থ:', e.message);
+  console.log('Failed:', e.message);
   process.exit(1);
 });

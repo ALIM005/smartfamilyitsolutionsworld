@@ -1,5 +1,6 @@
 // lib/features.ts
-// ফিচারের ডেটা এক জায়গায়। লেখা বদলাতে শুধু এই ফাইল এডিট করুন।
+// Feature data in one place. To change the text, edit only this file.
+
 
 export interface Feature {
   id: string;
@@ -9,101 +10,102 @@ export interface Feature {
   details: string;
 }
 
+
 export const featuresData: Feature[] = [
   {
     id: 'inventory',
     icon: '📦',
-    title: 'ইনভেন্টরি ম্যানেজমেন্ট',
-    description: 'স্টকের হিসাব, স্টক অ্যালার্ট ও পণ্যের তথ্য এক জায়গায়।',
+    title: 'Inventory Management',
+    description: 'Stock calculation, stock alerts, and product information in one place.',
     details:
-      'স্টক আপডেট, লো স্টক অ্যালার্ট এবং পণ্যের তথ্য এক জায়গা থেকে পরিচালনা করে আপনার গুদামের হিসাব নিয়ন্ত্রণে রাখুন।',
+      'Manage stock updates, low-stock alerts, and product information from one place to keep your warehouse accounts under control.',
   },
   {
     id: 'warehouse',
     icon: '🏬',
-    title: 'ওয়্যারহাউস',
-    description: 'একাধিক গুদাম বা শাখার স্টক ট্র্যাকিং।',
+    title: 'Warehouse',
+    description: 'Stock tracking for multiple warehouses or branches.',
     details:
-      'একাধিক লোকেশন বা ওয়্যারহাউসের স্টক ট্রান্সফার এবং কেন্দ্রীভূত পর্যবেক্ষণ সহজেই পরিচালনা করুন।',
+      'Easily manage stock transfers across multiple locations or warehouses and centralized monitoring.',
   },
   {
     id: 'pos',
     icon: '🧾',
-    title: 'POS ও ইনভয়েস',
-    description: 'দ্রুত বিক্রি, POS, মেমো ও ইনভয়েস প্রিন্ট ও জেনারেট।',
+    title: 'POS and Invoice',
+    description: 'Quick sales, POS, memo, and invoice printing and generation.',
     details:
-      'ক্যাশ কাউন্টারে দ্রুত বিলিং, মেমো তৈরি এবং পেশাদার ইনভয়েস প্রিন্ট বা ডাউনলোডের সুবিধা। বারকোড স্ক্যানারসহ প্রয়োজনীয় হার্ডওয়্যার সংযোগ আপনার চাহিদা অনুযায়ী যুক্ত করা যায়।',
+      'Fast billing at the cash counter, memo creation, and the ability to print or download professional invoices. Required hardware connections, including a barcode scanner, can be added according to your needs.',
   },
   {
     id: 'ecommerce',
     icon: '🛍️',
-    title: 'ই-কমার্স স্টোর',
-    description: 'অনলাইন স্টোর, কাস্টমার ও অর্ডার ম্যানেজমেন্টের সমন্বিত সমাধান।',
+    title: 'E-commerce Store',
+    description: 'An integrated solution for online store, customer, and order management.',
     details:
-      'কার্ট, কুপন ও চেকআউট সহ অনলাইন শপ। অনলাইন অর্ডারের সাথে স্টক ও কাস্টমার তথ্য একই সিস্টেমে মিলিয়ে রাখা যায়।',
+      'Online shop with cart, coupons, and checkout. Online orders can be matched with stock and customer information in the same system.',
   },
   {
     id: 'accounting',
     icon: '📊',
-    title: 'অ্যাকাউন্টিং',
-    description: 'আয়-ব্যয়, বাকি-বকেয়া ও রিপোর্ট সহজে দেখুন।',
+    title: 'Accounting',
+    description: 'Easily view income-expenses, dues-receivables, and reports.',
     details:
-      'দৈনিক লেজার, লাভ-ক্ষতির হিসাব এবং প্রয়োজনীয় আর্থিক প্রতিবেদন এক জায়গা থেকে দেখুন।',
+      'View daily ledgers, profit-loss calculations, and required financial reports from one place.',
   },
   {
     id: 'vendor',
     icon: '🏪',
-    title: 'ভেন্ডর ড্যাশবোর্ড',
-    description: 'মাল্টি-ভেন্ডর মার্কেটপ্লেসের জন্য আলাদা ম্যানেজমেন্ট প্যানেল।',
+    title: 'Vendor Dashboard',
+    description: 'A separate management panel for multi-vendor marketplaces.',
     details:
-      'ভেন্ডরদের পণ্য আপলোড, কমিশন হিসাব এবং আলাদা পেমেন্ট ট্র্যাকিংয়ের ব্যবস্থা।',
+      'A system for vendors to upload products, calculate commissions, and track separate payments.',
   },
   {
     id: 'hrm',
     icon: '👥',
-    title: 'HRM ও পে-রোল',
-    description: 'কর্মী তথ্য, হাজিরা ও বেতনের হিসাব।',
+    title: 'HRM and Payroll',
+    description: 'Employee information, attendance, and salary calculation.',
     details:
-      'কর্মীদের হাজিরা, ছুটি ব্যবস্থাপনা এবং বেতনের শিট তৈরির সুবিধা।',
+      'Features for employee attendance, leave management, and creating salary sheets.',
   },
   {
     id: 'analytics',
     icon: '📈',
-    title: 'অ্যানালিটিক্স',
-    description: 'বিক্রি, স্টক ও কাস্টমারের ডেটা থেকে ব্যবসার ড্যাশবোর্ড।',
+    title: 'Analytics',
+    description: 'Business dashboards from sales, stock, and customer data.',
     details:
-      'গ্রাফ ও রিপোর্টের মাধ্যমে বিক্রি, স্টক ও কাস্টমারের প্রবণতা দেখে ব্যবসায়িক সিদ্ধান্ত নিতে সহায়তা পাবেন।',
+      'You will be able to make business decisions by viewing sales, stock, and customer trends through graphs and reports.',
   },
   {
     id: 'spreadsheet',
     icon: '🗂️',
-    title: 'ক্লাউড স্প্রেডশিট',
-    description: 'ক্লাউডভিত্তিক স্প্রেডশিট, প্রাইভেট ডেটা ও অটো সিঙ্ক।',
+    title: 'Cloud Spreadsheet',
+    description: 'Cloud-based spreadsheet, private data, and auto sync.',
     details:
-      'এক্সেল বা গুগল শিটের মতো ব্রাউজারেই সরাসরি ডেটা পরিচালনার সুবিধা, ডেটা ক্লাউডে অটো সিঙ্ক হয়।',
+      'The ability to manage data directly in the browser, like Excel or Google Sheets; data automatically syncs to the cloud.',
   },
   {
     id: 'sms',
     icon: '🔔',
-    title: 'SMS ও নোটিফিকেশন',
-    description: 'অর্ডার আপডেট ও পেমেন্টের স্বয়ংক্রিয় SMS, ইমেইল ও নোটিফিকেশন।',
+    title: 'SMS and Notifications',
+    description: 'Automatic SMS, email, and notifications for order updates and payments.',
     details:
-      'কাস্টমারদের সাথে যোগাযোগ রাখতে অর্ডার, পেমেন্ট ও অ্যালার্টের স্বয়ংক্রিয় SMS ও ইমেইল বার্তা।',
+      'Automatic SMS and email messages for orders, payments, and alerts to stay in touch with customers.',
   },
   {
     id: 'security',
     icon: '🔐',
-    title: 'সিকিউর লগইন',
-    description: 'রোল-ভিত্তিক অ্যাক্সেস, পাসওয়ার্ড সুরক্ষা ও OTP/কোড ভেরিফিকেশন।',
+    title: 'Secure Login',
+    description: 'Role-based access, password security, and OTP/code verification.',
     details:
-      'কে কী দেখতে বা বদলাতে পারবে তা রোল দিয়ে নির্ধারণ, পাসওয়ার্ড সুরক্ষা এবং প্রয়োজনে OTP ভেরিফিকেশন। ডেটা HTTPS-এর মাধ্যমে সুরক্ষিতভাবে আদান-প্রদান হয়।',
+      'Determine who can view or change what through roles, password security, and OTP verification when needed. Data is securely exchanged over HTTPS.',
   },
   {
     id: 'crm',
     icon: '🤝',
     title: 'CRM',
-    description: 'কাস্টমারের তথ্য, যোগাযোগ ও সম্পর্ক ম্যানেজমেন্ট।',
+    description: 'Customer information, communication, and relationship management.',
     details:
-      'কাস্টমারের তথ্য সংরক্ষণ, ফলো-আপ রিমাইন্ডার এবং যোগাযোগের ইতিহাস এক জায়গায় রাখার টুল।',
+      'A tool to store customer information, follow-up reminders, and communication history in one place.',
   },
 ];

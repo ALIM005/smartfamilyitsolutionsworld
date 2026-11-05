@@ -1,32 +1,39 @@
 'use client';
 
+
 import React, { useState } from 'react';
 import Link from 'next/link';
+
 
 export default function TrackOrderPage() {
   const [orderIdInput, setOrderIdInput] = useState('');
   const [searched, setSearched] = useState(false);
   const [orderResult, setOrderResult] = useState<any>(null);
 
+
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
     if (!orderIdInput.trim()) return;
 
+
     setSearched(true);
 
-    // লোকাল স্টোরেজ বা সেভ করা অর্ডার লিস্ট থেকে খোঁজা
+
+    // Search from local storage or the saved order list
     const savedOrders = JSON.parse(localStorage.getItem('marketplace_orders') || '[]');
     const found = savedOrders.find(
       (ord: any) => ord.id.toLowerCase() === orderIdInput.trim().toLowerCase()
     );
 
+
     if (found) {
       setOrderResult(found);
     } else {
-      // যদি লোকাল স্টোরেজে না থাকে তবে ডেমো বা নট ফাউন্ড হিসেবে দেখাবে
+      // If not in local storage, it will show as demo or not found
       setOrderResult(null);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-linear-to-br from-[#FFF4F6] via-[#FDE6EC] to-[#FBD3DE] py-12 px-4 sm:px-6 lg:px-8">
@@ -41,9 +48,10 @@ export default function TrackOrderPage() {
             Track Your <span className="italic text-[#B0124F]">Order</span>
           </h1>
           <p className="text-sm text-[#7A5566] mt-2">
-            আপনার অর্ডার আইডি (Order ID) দিয়ে অর্ডারের বর্তমান অবস্থা জেনে নিন।
+            Find out the current status of your order using your Order ID.
           </p>
         </div>
+
 
         {/* Search Box Card */}
         <div className="bg-white/95 rounded-3xl shadow-xl border border-[#F3C6D3] p-6 sm:p-8 backdrop-blur mb-8">
@@ -53,7 +61,7 @@ export default function TrackOrderPage() {
               required
               value={orderIdInput}
               onChange={(e) => setOrderIdInput(e.target.value)}
-              placeholder="অর্ডার আইডি লিখুন (যেমন: ORD-123456)"
+              placeholder="Enter order ID (e.g., ORD-123456)"
               className="flex-1 px-4 py-3 rounded-2xl border border-[#F3C6D3] bg-[#FFFAFB] text-sm text-[#2E0A1C] placeholder:text-[#B590A0] focus:border-[#B0124F] focus:outline-none focus:ring-2 focus:ring-[#B0124F]/25"
             />
             <button
@@ -64,6 +72,7 @@ export default function TrackOrderPage() {
             </button>
           </form>
         </div>
+
 
         {/* Search Result Section */}
         {searched && (
@@ -81,6 +90,7 @@ export default function TrackOrderPage() {
                   </div>
                 </div>
 
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm bg-[#FFF4F6] p-4 rounded-2xl border border-[#F3C6D3]/60">
                   <div>
                     <p className="text-[#7A5566] text-xs">Customer Name</p>
@@ -96,12 +106,14 @@ export default function TrackOrderPage() {
                   </div>
                 </div>
 
+
                 <div className="space-y-2">
                   <p className="text-xs font-bold uppercase tracking-wider text-[#4A0F2E]">Items Ordered</p>
                   <p className="text-sm font-medium text-gray-800 bg-gray-50 p-3 rounded-xl border border-gray-100">
                     {orderResult.items}
                   </p>
                 </div>
+
 
                 <div className="flex items-center justify-between border-t border-[#F3C6D3] pt-4">
                   <div>
@@ -118,21 +130,23 @@ export default function TrackOrderPage() {
             ) : (
               <div className="text-center py-8 space-y-3">
                 <div className="text-4xl">🔍</div>
-                <h3 className="font-serif text-lg font-bold text-[#2E0A1C]">কোনো অর্ডার পাওয়া যায়নি</h3>
+                <h3 className="font-serif text-lg font-bold text-[#2E0A1C]">No order found</h3>
                 <p className="text-sm text-[#7A5566] max-w-md mx-auto">
-                  আপনার দেওয়া আইডি (<span className="font-semibold text-[#B0124F]">{orderIdInput}</span>) দিয়ে এই ডিভাইসে কোনো অর্ডার রেকর্ড পাওয়া যায়নি। দয়া করে সঠিক অর্ডার আইডি দিয়ে আবার চেষ্টা করুন।
+                  No order record was found on this device with the ID you provided (<span className="font-semibold text-[#B0124F]">{orderIdInput}</span>). Please try again with the correct order ID.
                 </p>
               </div>
             )}
           </div>
         )}
 
+
         {/* Back Link */}
         <div className="mt-8 text-center">
           <Link href="/marketplace" className="text-sm font-semibold text-[#B0124F] hover:underline">
-            ← শপিং এ ফিরে যান
+            ← Back to shopping
           </Link>
         </div>
+
 
       </div>
     </div>

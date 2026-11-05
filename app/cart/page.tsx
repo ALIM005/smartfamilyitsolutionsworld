@@ -1,11 +1,14 @@
 'use client';
 
+
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+
 
 /* ---------- Currency Type & Rate Configuration ---------- */
 type Currency = 'BDT' | 'USD';
 const BDT_PER_USD: number = Number(process.env.NEXT_PUBLIC_BDT_PER_USD) || 120;
+
 
 const usdFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -13,6 +16,7 @@ const usdFormatter = new Intl.NumberFormat('en-US', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
+
 
 interface CartItem {
   id: string;
@@ -24,9 +28,11 @@ interface CartItem {
   size?: string;
 }
 
+
 export default function CartPage() {
   const [currency, setCurrency] = useState<Currency>('BDT');
   const [imgError, setImgError] = useState<{ [key: string]: boolean }>({});
+
 
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
@@ -40,6 +46,7 @@ export default function CartPage() {
     },
   ]);
 
+
   useEffect(() => {
     try {
       const saved = localStorage.getItem('preferred_currency');
@@ -51,6 +58,7 @@ export default function CartPage() {
     }
   }, []);
 
+
   const handleCurrencyChange = (newCurrency: Currency) => {
     setCurrency(newCurrency);
     try {
@@ -59,6 +67,7 @@ export default function CartPage() {
       // ignore
     }
   };
+
 
   const updateQuantity = (id: string, delta: number) => {
     setCartItems((prevItems) =>
@@ -72,18 +81,23 @@ export default function CartPage() {
     );
   };
 
+
   const removeItem = (id: string) => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+
   const subtotalBDT = cartItems.reduce((sum, item) => sum + item.priceBDT * item.quantity, 0);
+
 
   const formatPrice = (amountBDT: number) => {
     const bdtAmount = Math.round(amountBDT);
     const usdAmount = amountBDT / BDT_PER_USD;
 
+
     const bdtFormatted = `৳${bdtAmount.toLocaleString('en-BD')}`;
     const usdFormatted = usdFormatter.format(usdAmount);
+
 
     if (currency === 'USD') {
       return (
@@ -94,6 +108,7 @@ export default function CartPage() {
       );
     }
 
+
     return (
       <span className="flex items-center gap-1.5 font-bold">
         <span className="text-[#B0124F]">{bdtFormatted}</span>
@@ -101,6 +116,7 @@ export default function CartPage() {
       </span>
     );
   };
+
 
   return (
     <div className="min-h-screen w-screen bg-linear-to-b from-[#FFF4F6] via-[#FFF9FA] to-[#FDE6EC] py-8 px-4 sm:px-10 text-[#2E0A1C] overflow-x-hidden -ml-4 sm:-ml-8 lg:-ml-12" style={{ width: '100vw', position: 'relative', left: '50%', right: '50%', marginLeft: '-50vw', marginRight: '-50vw' }}>
@@ -118,6 +134,7 @@ export default function CartPage() {
             </p>
           </div>
 
+
           {/* Currency Dropdown Selector */}
           <div className="flex items-center gap-2.5 bg-white px-4 py-2.5 rounded-full border border-[#F3C6D3] shadow-sm hover:shadow transition">
             <span className="text-xs font-bold uppercase tracking-wider text-[#4A0F2E]">
@@ -133,6 +150,7 @@ export default function CartPage() {
             </select>
           </div>
         </div>
+
 
         {cartItems.length === 0 ? (
           <div className="text-center py-24 bg-white/90 backdrop-blur-md rounded-3xl border border-[#F3C6D3] shadow-sm space-y-4 w-full">
@@ -179,6 +197,7 @@ export default function CartPage() {
                       )}
                     </div>
 
+
                     <div>
                       <h3 className="font-serif font-bold text-lg sm:text-xl text-[#2E0A1C] group-hover:text-[#B0124F] transition">
                         {item.name}
@@ -190,6 +209,7 @@ export default function CartPage() {
                       <div className="mt-2 text-base">{formatPrice(item.priceBDT)}</div>
                     </div>
                   </div>
+
 
                   <div className="flex items-center justify-between w-full sm:w-auto gap-6 border-t sm:border-t-0 pt-4 sm:pt-0 border-[#F3C6D3]">
                     {/* Quantity Control */}
@@ -209,6 +229,7 @@ export default function CartPage() {
                       </button>
                     </div>
 
+
                     <button
                       onClick={() => removeItem(item.id)}
                       className="text-red-500 hover:text-red-700 text-xs font-bold uppercase tracking-wider hover:underline transition"
@@ -219,6 +240,7 @@ export default function CartPage() {
                 </div>
               ))}
             </div>
+
 
             {/* Order Summary & Payment Section */}
             <div className="lg:col-span-4 space-y-6 w-full">
@@ -234,6 +256,7 @@ export default function CartPage() {
                   <div>{formatPrice(subtotalBDT)}</div>
                 </div>
 
+
                 <div className="flex justify-between items-center text-sm sm:text-base text-[#7A5566]">
                   <span className="font-medium">Shipping Fee</span>
                   <span className="font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full text-xs">
@@ -241,10 +264,12 @@ export default function CartPage() {
                   </span>
                 </div>
 
+
                 <div className="border-t border-[#F3C6D3] pt-4 flex justify-between items-center">
                   <span className="font-bold text-lg sm:text-xl text-[#4A0F2E]">Total</span>
                   <div className="text-lg sm:text-xl">{formatPrice(subtotalBDT)}</div>
                 </div>
+
 
                 <Link
                   href="/checkout"
@@ -254,9 +279,11 @@ export default function CartPage() {
                 </Link>
               </div>
 
+
               {/* VIP Custom Multi-Currency Debit Card Style */}
               <div className="relative overflow-hidden bg-linear-to-r from-[#1E3A8A] via-[#2563EB] to-[#F59E0B] p-6 rounded-3xl text-white shadow-2xl border border-amber-300/50 space-y-4 w-full">
                 <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+
 
                 <div className="flex items-center justify-between relative z-10 border-b border-white/20 pb-3">
                   <div className="flex items-center gap-2 whitespace-nowrap overflow-hidden">
@@ -268,6 +295,7 @@ export default function CartPage() {
                     100% SECURE
                   </span>
                 </div>
+
 
                 <div className="relative z-10">
                   <p className="text-[11px] text-white/90 font-medium whitespace-nowrap overflow-hidden text-ellipsis">
@@ -291,10 +319,13 @@ export default function CartPage() {
                 </div>
               </div>
 
+
             </div>
+
 
           </div>
         )}
+
 
       </div>
     </div>

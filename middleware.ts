@@ -2,13 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
 import { getProductByHost, getProductByPath } from '@/lib/products';
 
+
 const COOKIE = 'sf_token';
+
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const host = req.headers.get('host') || '';
 
-  // ১. কাস্টম ডোমেইনের হোম → ঐ প্রোডাক্টের ল্যান্ডিং পেজ
+
+  // 1. Custom domain homepage → that product's landing page
   if (pathname === '/') {
     const product = getProductByHost(host);
     if (product) {
@@ -18,7 +21,8 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // ২. /apps/* লগইন ছাড়া নয়
+
+  // 2. /apps/* is not accessible without login
   if (pathname.startsWith('/apps')) {
     const token = req.cookies.get(COOKIE)?.value;
     let valid = false;
@@ -41,8 +45,10 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+
   return NextResponse.next();
 }
+
 
 export const config = {
   matcher: ['/', '/apps/:path*'],

@@ -1,11 +1,12 @@
 // lib/contact.ts
-// যোগাযোগের তথ্য একটাই জায়গায়। ফুটার (app/layout.tsx) ও SEO স্ট্রাকচার্ড ডেটা (app/page.tsx) এখান থেকে নেয়।
-// তথ্য বদলাতে শুধু এই ফাইল এডিট করুন।
+// Contact information in one place. The footer (app/layout.tsx) and SEO structured data (app/page.tsx) take it from here.
+// To change the information, edit only this file.
+
 
 export const CONTACT = {
   name: 'H M ALIM UDDIN',
   email: 'alim@smartfamilyitsolutionsworld.com',
-  whatsappNumber: '8801934111005', // দেশের কোড সহ, + ও স্পেস ছাড়া (wa.me লিংকের জন্য)
+  whatsappNumber: '8801934111005', // With country code, without + and spaces (for the wa.me link)
   whatsappDisplay: '+8801934111005',
   address: {
     village: 'Burdeo',
@@ -17,19 +18,24 @@ export const CONTACT = {
   },
 } as const;
 
+
 export const WHATSAPP_GREETING =
-  'আসসালামু আলাইকুম, আমি Smart Family IT Solutions World সম্পর্কে জানতে চাই।';
+  'Assalamu Alaikum, I would like to know about Smart Family IT Solutions World.';
+
 
 export const whatsappUrl = `https://wa.me/${CONTACT.whatsappNumber}?text=${encodeURIComponent(WHATSAPP_GREETING)}`;
 export const mailtoUrl = `mailto:${CONTACT.email}`;
 
-// মিটিং বুকিং (Calendly)
+
+// Meeting booking (Calendly)
 export const CALENDLY_URL = 'https://calendly.com/smartfamilyitsolutionsworld/30min';
 
-// এক লাইনের ঠিকানা (থানা ও বিভাগ জেলার সমান হওয়ায় বাদ দেওয়া হয়েছে)
+
+// One-line address (thana and division are the same as the district, so they have been omitted)
 export const addressLine = `${CONTACT.address.village}, ${CONTACT.address.postOffice}-${CONTACT.address.postCode}, ${CONTACT.address.district}`;
 
-// সোশ্যাল মিডিয়া প্রোফাইল। নতুন যোগ করতে name ('Facebook' বা 'YouTube') ও url দিন।
+
+// Social media profiles. To add a new one, provide name ('Facebook' or 'YouTube') and url.
 export const SOCIAL = [
   { name: 'Facebook', url: 'https://www.facebook.com/share/1DzCBa7ejy/' },
   { name: 'YouTube', url: 'https://youtube.com/@analimtv?si=SwsHozn1jeiIBA9E' },

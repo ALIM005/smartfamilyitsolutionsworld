@@ -1,18 +1,22 @@
 // lib/rate-limit.ts
-// সহজ ইন-মেমোরি রেট লিমিট। Vercel সার্ভারলেসে প্রতিটি ইনস্ট্যান্সের নিজস্ব মেমোরি, তাই এটা
-// "সাধারণ অপব্যবহার ঠেকানো"-র স্তর, কড়া সুরক্ষা নয়। ট্রাফিক বাড়লে Upstash Redis ব্যবহার করুন।
+// Simple in-memory rate limit. In Vercel serverless, each instance has its own memory, so this is
+// a layer for "preventing general abuse", not strict security. Use Upstash Redis when traffic increases.
+
 
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
+
 export function rateLimit(key: string, max: number, windowMs: number): { ok: boolean; retryAfterSec: number } {
   const now = Date.now();
+
 
   if (buckets.size > 5000) {
     buckets.forEach((b, k) => {
       if (b.resetAt <= now) buckets.delete(k);
     });
   }
+
 
   const bucket = buckets.get(key);
   if (!bucket || bucket.resetAt <= now) {
@@ -25,6 +29,7 @@ export function rateLimit(key: string, max: number, windowMs: number): { ok: boo
   }
   return { ok: true, retryAfterSec: 0 };
 }
+
 
 export function clientIp(req: Request): string {
   const fwd = req.headers.get('x-forwarded-for');

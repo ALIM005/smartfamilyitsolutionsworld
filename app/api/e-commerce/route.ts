@@ -1,10 +1,11 @@
 // app/api/e-commerce/route.ts
-// পাবলিক স্টোর API:
-//   GET  /api/e-commerce                         → সক্রিয় প্রোডাক্ট + কনফিগ (ডেলিভারি, পেমেন্ট অপশন)
-//   GET  /api/e-commerce?order=SF...&phone=01... → অর্ডার ট্র্যাকিং
-//   POST /api/e-commerce?action=quote            → সার্ভারের হিসাবে মোট দাম (কার্ট দেখানোর জন্য)
-//   POST /api/e-commerce                         → অর্ডার দেওয়া
-// দাম, ভ্যাট, শিপিং, কুপন সবকিছু সার্ভার নিজে ডাটাবেস থেকে হিসাব করে, ক্লায়েন্টের পাঠানো কোনো অঙ্ক বিশ্বাস করা হয় না।
+// Public store API:
+//   GET  /api/e-commerce                                 → Active products + config (delivery, payment options)
+//   GET  /api/e-commerce?order=SF...&phone=01... → Order tracking
+//   POST /api/e-commerce?action=quote             → Total price calculated on the server (for showing the cart)
+//   POST /api/e-commerce                          → Place an order
+// Price, VAT, shipping, coupons—everything is calculated by the server itself from the database; no number sent by the client is trusted.
+
 
 import { randomBytes } from 'crypto';
 import { NextResponse } from 'next/server';
@@ -24,49 +25,59 @@ import {
 import { clientIp, rateLimit } from '@/lib/rate-limit';
 import { toProduct, type ProductLike } from '@/lib/serialize';
 
+
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
 
 const OBJECT_ID = /^[a-f0-9]{24}$/i;
 const BD_PHONE = /^(?:\+?88)?(01[3-9]\d{8})$/;
 const TRX_ID = /^[A-Za-z0-9]{6,20}$/;
 
+
 function fail(error: string, status = 400, extra?: Record<string, unknown>) {
   return NextResponse.json({ success: false, error, ...extra }, { status });
 }
 
+
 function tooMany(retryAfterSec: number) {
-  const res = fail('অনেক বেশি অনুরোধ হয়েছে, কিছুক্ষণ পরে আবার চেষ্টা করুন', 429);
+  const res = fail('Too many requests have been made, please try again after a while', 429);
   res.headers.set('Retry-After', String(retryAfterSec));
   return res;
 }
+
 
 function str(v: unknown, max: number): string {
   return typeof v === 'string' ? v.trim().slice(0, max) : '';
 }
 
+
 // ---------------------------------------------------------------- GET
+
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const ip = clientIp(req);
 
+
   try {
-    // অর্ডার ট্র্যাকিং
+    // Order tracking
     const orderNo = url.searchParams.get('order');
     if (orderNo !== null) {
       const rl = rateLimit(`track:${ip}`, 15, 60_000);
       if (!rl.ok) return tooMany(rl.retryAfterSec);
 
+
       const phoneMatch = BD_PHONE.exec((url.searchParams.get('phone') ?? '').replace(/[\s-]/g, ''));
-      if (!phoneMatch) return fail('সঠিক মোবাইল নম্বর দিন');
+      if (!phoneMatch) return fail('Provide a valid mobile number');
+
 
       await connectMongo();
       const order = await Order.findOne({ orderNumber: orderNo.trim().toUpperCase().slice(0, 40) }).lean();
       
-      // অপশনাল চেইনিং ব্যবহার করে টাইপ এরর সমাধান করা হয়েছে
+      // Optional chaining has been used to resolve the type error
       if (!order || order.customer?.phone !== phoneMatch[1]) {
-        return fail('এই তথ্যে কোনো অর্ডার পাওয়া যায়নি', 404);
+        return fail('No order was found with this information', 404);
       }
       return NextResponse.json({
         success: true,
@@ -82,10 +93,12 @@ export async function GET(req: Request) {
       });
     }
 
-    // প্রোডাক্ট তালিকা
+
+    // Product list
     await connectMongo();
     const docs = await Product.find({ active: true }).sort({ featured: -1, createdAt: -1 }).limit(500).lean();
     const products = (docs as unknown as ProductLike[]).map(toProduct);
+
 
     return NextResponse.json(
       {
@@ -103,11 +116,13 @@ export async function GET(req: Request) {
     );
   } catch (error) {
     console.error('[e-commerce GET]', error);
-    return fail('সার্ভারে সমস্যা হয়েছে, কিছুক্ষণ পরে আবার চেষ্টা করুন', 500);
+    return fail('There was a problem with the server, please try again after a while', 500);
   }
 }
 
+
 // ---------------------------------------------------------------- POST helpers
+
 
 type Line = {
   productId: string;
@@ -115,6 +130,7 @@ type Line = {
   color: string;
   size: string;
 };
+
 
 type Built =
   | { ok: false; error: string; status?: number }
@@ -127,24 +143,27 @@ type Built =
       shippingKey: string;
     };
 
-// কার্টের লাইন যাচাই করে সার্ভারের দামে হিসাব বানায়
+
+// Validates the cart lines and calculates using the server's prices
 async function buildQuote(body: Record<string, unknown>): Promise<Built> {
   const rawItems = body.items;
-  if (!Array.isArray(rawItems) || rawItems.length === 0) return { ok: false, error: 'কার্ট খালি' };
-  if (rawItems.length > MAX_LINES_PER_ORDER) return { ok: false, error: 'একসাথে অনেক বেশি আইটেম' };
+  if (!Array.isArray(rawItems) || rawItems.length === 0) return { ok: false, error: 'The cart is empty' };
+  if (rawItems.length > MAX_LINES_PER_ORDER) return { ok: false, error: 'Too many items at once' };
+
 
   const lines: Line[] = [];
   for (const raw of rawItems) {
-    if (!raw || typeof raw !== 'object') return { ok: false, error: 'অবৈধ আইটেম' };
+    if (!raw || typeof raw !== 'object') return { ok: false, error: 'Invalid item' };
     const r = raw as Record<string, unknown>;
     const productId = str(r.productId, 24);
     const quantity = Number(r.quantity);
-    if (!OBJECT_ID.test(productId)) return { ok: false, error: 'অবৈধ প্রোডাক্ট' };
+    if (!OBJECT_ID.test(productId)) return { ok: false, error: 'Invalid product' };
     if (!Number.isInteger(quantity) || quantity < 1 || quantity > MAX_QTY_PER_LINE) {
-      return { ok: false, error: `প্রতি আইটেমে ১–${MAX_QTY_PER_LINE} টি নেওয়া যাবে` };
+      return { ok: false, error: `You can take 1–${MAX_QTY_PER_LINE} per item` };
     }
     lines.push({ productId, quantity, color: str(r.color, 40), size: str(r.size, 40) });
   }
+
 
   const ids = Array.from(new Set(lines.map((l) => l.productId)));
   const docs = (await Product.find({
@@ -152,42 +171,49 @@ async function buildQuote(body: Record<string, unknown>): Promise<Built> {
     active: true,
   }).lean()) as unknown as (ProductLike & { stock: number })[];
 
+
   const productMap = new Map<string, ProductLike & { stock: number }>();
   for (const d of docs) productMap.set(d._id.toString(), d);
+
 
   const totals = new Map<string, number>();
   for (const l of lines) {
     const p = productMap.get(l.productId);
-    if (!p) return { ok: false, error: 'একটি প্রোডাক্ট আর পাওয়া যাচ্ছে না, কার্ট আপডেট করুন', status: 409 };
+    if (!p) return { ok: false, error: 'A product is no longer available, update the cart', status: 409 };
+
 
     if (p.colors && p.colors.length > 0 && !p.colors.includes(l.color)) {
-      return { ok: false, error: `${p.name}: রং বেছে নিন` };
+      return { ok: false, error: `${p.name}: Choose a color` };
     }
     if (p.sizes && p.sizes.length > 0 && !p.sizes.includes(l.size)) {
-      return { ok: false, error: `${p.name}: সাইজ বেছে নিন` };
+      return { ok: false, error: `${p.name}: Choose a size` };
     }
     if ((!p.colors || p.colors.length === 0) && l.color) l.color = '';
     if ((!p.sizes || p.sizes.length === 0) && l.size) l.size = '';
 
+
     totals.set(l.productId, (totals.get(l.productId) ?? 0) + l.quantity);
   }
+
 
   for (const [id, qty] of Array.from(totals.entries())) {
     const p = productMap.get(id)!;
     if (p.stock < qty) {
       return {
         ok: false,
-        error: p.stock <= 0 ? `${p.name}: স্টক শেষ` : `${p.name}: মাত্র ${p.stock} টি আছে`,
+        error: p.stock <= 0 ? `${p.name}: Out of stock` : `${p.name}: Only ${p.stock} available`,
         status: 409,
       };
     }
   }
 
+
   const shippingKey = str(body.shippingKey, 40);
   const shipping = getShippingOptions().find((s) => s.key === shippingKey);
-  if (!shipping) return { ok: false, error: 'ডেলিভারি এলাকা বেছে নিন' };
+  if (!shipping) return { ok: false, error: 'Choose a delivery area' };
 
-  // কুপন আগে প্রোডাক্ট-ডিসকাউন্ট সহ subtotal দিয়ে যাচাই
+
+  // Coupon is validated first with the subtotal including product discounts
   const preQuote = computeQuote({
     lines: lines.map((l) => {
       const p = productMap.get(l.productId)!;
@@ -197,11 +223,14 @@ async function buildQuote(body: Record<string, unknown>): Promise<Built> {
     vatRate: getVatRate(),
   });
 
+
   const couponCode = str(body.couponCode, 40);
   if (!couponCode) return { ok: true, quote: preQuote, lines, productMap, totals, shippingKey };
 
+
   const check = checkCoupon(getCoupons(), couponCode, preQuote.subtotal);
   if (!check.ok) return { ok: false, error: check.error };
+
 
   const quote = computeQuote({
     lines: lines.map((l) => {
@@ -214,6 +243,7 @@ async function buildQuote(body: Record<string, unknown>): Promise<Built> {
   });
   return { ok: true, quote, lines, productMap, totals, shippingKey };
 }
+
 
 async function releaseStock(done: { id: string; qty: number }[]) {
   for (const d of done) {
@@ -228,8 +258,9 @@ async function releaseStock(done: { id: string; qty: number }[]) {
   }
 }
 
+
 function newOrderNumber(): string {
-  const d = new Date(Date.now() + 6 * 3600 * 1000); // বাংলাদেশ সময়ের তারিখ
+  const d = new Date(Date.now() + 6 * 3600 * 1000); // Date in Bangladesh time
   const yymmdd =
     String(d.getUTCFullYear()).slice(2) +
     String(d.getUTCMonth() + 1).padStart(2, '0') +
@@ -237,33 +268,41 @@ function newOrderNumber(): string {
   return `SF${yymmdd}-${randomBytes(3).toString('hex').toUpperCase()}`;
 }
 
+
 // ---------------------------------------------------------------- POST
+
 
 export async function POST(req: Request) {
   const url = new URL(req.url);
   const isQuote = url.searchParams.get('action') === 'quote';
   const ip = clientIp(req);
 
+
   const rl = isQuote ? rateLimit(`quote:${ip}`, 60, 60_000) : rateLimit(`order:${ip}`, 6, 10 * 60_000);
   if (!rl.ok) return tooMany(rl.retryAfterSec);
 
+
   const declared = Number(req.headers.get('content-length') ?? 0);
-  if (declared > 50_000) return fail('অনুরোধ অনেক বড়', 413);
+  if (declared > 50_000) return fail('The request is too large', 413);
+
 
   let body: Record<string, unknown>;
   try {
     const parsed: unknown = await req.json();
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return fail('অবৈধ ডেটা');
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return fail('Invalid data');
     body = parsed as Record<string, unknown>;
   } catch {
-    return fail('অবৈধ ডেটা');
+    return fail('Invalid data');
   }
+
 
   try {
     await connectMongo();
 
+
     const built = await buildQuote(body);
     if (!built.ok) return fail(built.error, built.status ?? 400);
+
 
     if (isQuote) {
       return NextResponse.json({
@@ -277,28 +316,33 @@ export async function POST(req: Request) {
       });
     }
 
-    // ---- গ্রাহকের তথ্য ও পেমেন্ট যাচাই
+
+    // ---- Customer information and payment validation
     const customer = (body.customer && typeof body.customer === 'object' ? body.customer : {}) as Record<string, unknown>;
     const name = str(customer.name, 120);
     const address = str(customer.address, 500);
     const phoneMatch = BD_PHONE.exec(str(customer.phone, 20).replace(/[\s-]/g, ''));
 
-    if (name.length < 2) return fail('নাম লিখুন');
-    if (!phoneMatch) return fail('সঠিক বাংলাদেশি মোবাইল নম্বর দিন (যেমন 017XXXXXXXX)');
-    if (address.length < 10) return fail('সম্পূর্ণ ঠিকানা লিখুন (এলাকা, থানা, জেলা সহ)');
+
+    if (name.length < 2) return fail('Enter a name');
+    if (!phoneMatch) return fail('Provide a valid Bangladeshi mobile number (e.g., 017XXXXXXXX)');
+    if (address.length < 10) return fail('Enter the full address (including area, thana, district)');
+
 
     const method = str(body.paymentMethod, 20);
     const option = getPaymentOptions().find((p) => p.method === method);
-    if (!option) return fail('এই পেমেন্ট পদ্ধতি এখন চালু নেই');
+    if (!option) return fail('This payment method is not currently active');
+
 
     let paymentTrxId: string | undefined;
     if (option.needsTrxId) {
       const trx = str(body.paymentTrxId, 20);
-      if (!TRX_ID.test(trx)) return fail(`${method} ট্রানজেকশন আইডি দিন (৬–২০ অক্ষর/সংখ্যা)`);
+      if (!TRX_ID.test(trx)) return fail(`Provide the ${method} transaction ID (6–20 letters/numbers)`);
       paymentTrxId = trx.toUpperCase();
     }
 
-    // ---- স্টক কমানো (প্রতি প্রোডাক্টে অ্যাটমিক, শর্ত: stock >= qty)
+
+    // ---- Reduce stock (atomic per product, condition: stock >= qty)
     const done: { id: string; qty: number }[] = [];
     for (const [id, qty] of Array.from(built.totals.entries())) {
       const r = await Product.updateOne(
@@ -308,12 +352,13 @@ export async function POST(req: Request) {
       if (r.modifiedCount !== 1) {
         await releaseStock(done);
         const p = built.productMap.get(id);
-        return fail(`${p ? p.name : 'একটি প্রোডাক্ট'}: স্টক শেষ হয়ে গেছে, কার্ট আপডেট করুন`, 409);
+        return fail(`${p ? p.name : 'A product'}: Stock has run out, update the cart`, 409);
       }
       done.push({ id, qty });
     }
 
-    // ---- অর্ডার সেভ (দাম অর্ডারের সময়ের স্ন্যাপশট হিসেবে)
+
+    // ---- Save order (price as a snapshot at the time of the order)
     const items = built.lines.map((l, i) => {
       const p = built.productMap.get(l.productId)!;
       return {
@@ -327,10 +372,11 @@ export async function POST(req: Request) {
       };
     });
 
+
     let saved: { orderNumber: string } | null = null;
     for (let attempt = 0; attempt < 3 && !saved; attempt++) {
       try {
-        // 'as any' কাস্টিং ব্যবহার করে টাইপস্ক্রিপ্টের 'never' টাইপ এরর দূর করা হয়েছে
+        // 'as any' casting has been used to remove TypeScript's 'never' type error
         const created = (await Order.create({
           orderNumber: newOrderNumber(),
           customer: { name, phone: phoneMatch[1], address },
@@ -357,6 +403,7 @@ export async function POST(req: Request) {
       }
     }
 
+
     return NextResponse.json({
       success: true,
       order: {
@@ -368,6 +415,6 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error('[e-commerce POST]', error);
-    return fail('অর্ডার সম্পন্ন করা যায়নি, কিছুক্ষণ পরে আবার চেষ্টা করুন', 500);
+    return fail('The order could not be completed, please try again after a while', 500);
   }
 }

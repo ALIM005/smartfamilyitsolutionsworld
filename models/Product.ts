@@ -1,6 +1,7 @@
 // models/Product.ts
 import mongoose, { Schema, InferSchemaType, Model } from 'mongoose';
 
+
 const ProductSchema = new Schema(
   {
     name: { type: String, required: true, trim: true, maxlength: 200 },
@@ -10,7 +11,7 @@ const ProductSchema = new Schema(
     category: { type: String, required: true, trim: true, index: true },
     brand: { type: String, trim: true },
     price: { type: Number, required: true, min: 0 },
-    // শতকরা ছাড় (০-৯০)। চূড়ান্ত দাম সার্ভার হিসাব করবে।
+    // Percentage discount (0-90). The server will calculate the final price.
     discount: { type: Number, default: 0, min: 0, max: 90 },
     stock: { type: Number, required: true, min: 0, default: 0 },
     sold: { type: Number, default: 0, min: 0 },
@@ -25,9 +26,12 @@ const ProductSchema = new Schema(
   { timestamps: true }
 );
 
+
 ProductSchema.index({ name: 'text', brand: 'text', tags: 'text', sku: 'text' });
 
+
 export type ProductDoc = InferSchemaType<typeof ProductSchema> & { _id: mongoose.Types.ObjectId };
+
 
 export default (mongoose.models.Product as Model<ProductDoc>) ||
   mongoose.model<ProductDoc>('Product', ProductSchema);
