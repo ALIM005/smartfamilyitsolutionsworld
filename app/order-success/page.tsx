@@ -2,11 +2,11 @@
 
 export const dynamic = 'force-dynamic';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const orderIdParam = searchParams.get('orderId');
@@ -28,7 +28,7 @@ export default function OrderSuccessPage() {
   }, [orderIdParam]);
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-linear-to-br from-[#FFF4F6] via-[#FDE6EC] to-[#FBD3DE] p-6">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#FFF4F6] via-[#FDE6EC] to-[#FBD3DE] p-6">
       {/* Background Glow Effects */}
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#D81B7A]/15 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-[#C9A24B]/20 blur-3xl" />
@@ -36,7 +36,7 @@ export default function OrderSuccessPage() {
       <div className="relative w-full max-w-lg rounded-3xl border border-[#F3C6D3] bg-white/95 p-8 text-center shadow-2xl shadow-[#B0124F]/15 backdrop-blur md:p-10">
         
         {/* Success Checkmark Icon */}
-        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-linera-to-br from-[#B0124F] to-[#D81B7A] text-3xl font-extrabold text-white shadow-lg shadow-[#B0124F]/40 ring-4 ring-[#E3B964]/60">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[#B0124F] to-[#D81B7A] text-3xl font-extrabold text-white shadow-lg shadow-[#B0124F]/40 ring-4 ring-[#E3B964]/60">
           ✓
         </div>
 
@@ -93,14 +93,14 @@ export default function OrderSuccessPage() {
         <div className="space-y-3">
           <Link
             href="/track-order"
-            className="block w-full rounded-full bg-linear-to-r from-[#E3B964] to-[#C9A24B] py-3.5 text-sm font-bold text-[#2E0A1C] shadow-md shadow-black/10 hover:brightness-105 transition"
+            className="block w-full rounded-full bg-gradient-to-r from-[#E3B964] to-[#C9A24B] py-3.5 text-sm font-bold text-[#2E0A1C] shadow-md shadow-black/10 hover:brightness-105 transition"
           >
             📍 Track Your Order
           </Link>
 
           <Link
             href="/marketplace"
-            className="block w-full rounded-full bg-linear-to-r from-[#B0124F] to-[#D81B7A] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#B0124F]/30 hover:opacity-90 transition"
+            className="block w-full rounded-full bg-gradient-to-r from-[#B0124F] to-[#D81B7A] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#B0124F]/30 hover:opacity-90 transition"
           >
             Continue Shopping →
           </Link>
@@ -108,5 +108,13 @@ export default function OrderSuccessPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center">Loading...</div>}>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
