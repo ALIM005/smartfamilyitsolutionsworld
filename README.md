@@ -42,6 +42,8 @@ smartfamily-app
 │  │  └─ page.tsx
 │  ├─ cart
 │  │  └─ page.tsx
+│  ├─ compare
+│  │  └─ page.tsx
 │  ├─ contact
 │  │  └─ page.tsx
 │  ├─ error.tsx
@@ -81,7 +83,9 @@ smartfamily-app
 │  │  └─ page.tsx
 │  ├─ terms
 │  │  └─ page.tsx
-│  └─ track-order
+│  ├─ track-order
+│  │  └─ page.tsx
+│  └─ wishlist
 │     └─ page.tsx
 ├─ check-db.js
 ├─ components
@@ -91,6 +95,7 @@ smartfamily-app
 │  ├─ BlogClient.tsx
 │  ├─ Calculator.tsx
 │  ├─ ContactForm.tsx
+│  ├─ CurrencySwitcher.tsx
 │  ├─ FaqSection.tsx
 │  ├─ FeatureExplorer.tsx
 │  ├─ FloatingChat.tsx

@@ -9,7 +9,8 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getLocale } from 'next-intl/server';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import ThemeSwitcher from '@/components/ThemeSwitcher';
-import FloatingChat from '@/components/FloatingChat'; // ফ্লোটিং চ্যাট ইমপোর্ট করা হয়েছে
+import CurrencySwitcher from '@/components/CurrencySwitcher';
+import FloatingChat from '@/components/FloatingChat';
 import { ThemeProvider } from 'next-themes';
 
 const siteUrl = process.env.SITE_URL || `https://${COMPANY.domain}`;
@@ -63,8 +64,244 @@ const socialIcons: Record<string, ReactNode> = {
 const footerLinkClass =
   'rounded transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-400';
 
+/* ------------------------------------------------------------------ */
+/*  VIP HEADER – gold & navy design                                    */
+/* ------------------------------------------------------------------ */
+
+// গোল্ড গ্রেডিয়েন্ট (বাটন / বর্ডার / আইকন সার্কেল)
+const goldGradient =
+  'bg-[linear-gradient(180deg,#fff0a8_0%,#ffd34d_30%,#e8a817_65%,#b97a05_100%)]';
+
+const goldPill =
+  `${goldGradient} inline-flex items-center gap-2 rounded-full border border-[#fff3b8] px-4 py-1.5 text-sm font-extrabold text-[#0a1f5c] ` +
+  'shadow-[0_0_14px_rgba(255,200,60,0.55),inset_0_1px_0_rgba(255,255,255,0.8),inset_0_-2px_3px_rgba(120,70,0,0.35)] ' +
+  'transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white';
+
 const navLinkClass =
-  'rounded transition hover:text-blue-600 dark:hover:text-blue-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500';
+  'whitespace-nowrap rounded px-1 text-[15px] font-extrabold text-[#0a1f5c] transition hover:text-[#b97a05] ' +
+  'focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a1f5c]';
+
+const dropItemClass =
+  'block rounded-xl px-3 py-2 text-xs font-bold text-[#0a1f5c] hover:bg-[#fff1c2]';
+
+const mainNav = [
+  { href: '/products', label: 'Products' },
+  { href: '/features', label: 'Features' },
+  { href: '/marketplace', label: 'Marketplace' },
+];
+
+const serviceLinks = [
+  { href: '/services/web-development', label: '🌐 Web & E-Commerce Dev' },
+  { href: '/services/erp-software', label: '📦 ERP & Business Software' },
+  { href: '/services/digital-marketing', label: '📈 Digital Marketing & SEO' },
+  { href: '/services/design-branding', label: '🎨 Design, Branding & IT' },
+];
+
+const companyLinks = [
+  { href: '/about', label: '🏢 About Us' },
+  { href: '/portfolio', label: '💼 Portfolio' },
+  { href: '/team', label: '👥 Our Team' },
+  { href: '/packages', label: '🏷️ Packages / Price' },
+];
+
+function Chevron({ className = 'stroke-[#0a1f5c]' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={`h-3.5 w-3.5 fill-none ${className}`} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+function Divider() {
+  return <span aria-hidden="true" className="hidden h-5 w-px bg-gradient-to-b from-transparent via-[#c9961a] to-transparent sm:block" />;
+}
+
+/* VIP বাল্ব – "Admin" লেখার বদলে শুধু একটি আলো-জ্বলা বাল্ব আইকন।
+   লেখা/টাইটেল নেই, তাই দেখে বোঝা যায় না এটি অ্যাডমিন লিংক। (Admin পেজ লগইন পাসওয়ার্ড দিয়েই সুরক্ষিত) */
+function VipBulb() {
+  return (
+    <Link
+      href="/admin"
+      prefetch={false}
+      rel="nofollow"
+      aria-label="VIP"
+      className={`${goldGradient} group relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#3a2600] shadow-[0_0_14px_rgba(255,200,60,0.8),inset_0_2px_3px_rgba(255,255,255,0.7)] transition hover:scale-110 hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a1f5c] motion-reduce:transition-none motion-reduce:hover:scale-100`}
+    >
+      {/* জ্বলজ্বলে গ্লো */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 animate-pulse rounded-full bg-[radial-gradient(circle,rgba(255,244,170,0.9)_0%,transparent_70%)] motion-reduce:animate-none"
+      />
+      <svg
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+        focusable="false"
+        className="relative h-6 w-6 stroke-[#3a2600]"
+        fill="#fff7c2"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        {/* রশ্মি */}
+        <path d="M12 1v1.5M3.6 4.6l1 1M20.4 4.6l-1 1M1.5 11H3M21 11h1.5" fill="none" />
+        {/* বাল্ব */}
+        <path d="M12 4a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V17h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 4z" />
+        {/* বেস */}
+        <path d="M9.8 19.5h4.4M10.6 21.5h2.8" fill="none" />
+      </svg>
+    </Link>
+  );
+}
+
+function NavDropdown({ label, items, width }: { label: string; items: { href: string; label: string }[]; width: string }) {
+  return (
+    <div className="group relative">
+      <button type="button" className={`flex items-center gap-1 ${navLinkClass}`} aria-haspopup="true">
+        {label}
+        <Chevron />
+      </button>
+      <div
+        className={`absolute left-0 top-full z-50 hidden ${width} rounded-2xl border border-[#e0b030] bg-white p-2 shadow-2xl group-hover:block group-focus-within:block`}
+      >
+        {items.map((it) => (
+          <Link key={it.href} href={it.href} className={dropItemClass}>
+            {it.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function VipHeader() {
+  return (
+    <header className="sticky top-0 z-50">
+      <div
+        className="relative border-y-2 border-[#e0a820] bg-[linear-gradient(90deg,#04143f_0%,#0a3a9e_28%,#0b47c2_50%,#0a3a9e_72%,#04143f_100%)] shadow-[0_6px_24px_rgba(0,20,80,0.55)]"
+      >
+        {/* ডটেড ওয়ার্ল্ড ম্যাপ লেয়ার */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle, rgba(90,170,255,0.9) 1.1px, transparent 1.6px)',
+            backgroundSize: '6px 6px',
+            WebkitMaskImage:
+              'radial-gradient(ellipse 22% 55% at 47% 30%, #000 40%, transparent 100%)',
+            maskImage:
+              'radial-gradient(ellipse 22% 55% at 47% 30%, #000 40%, transparent 100%)',
+          }}
+        />
+        {/* গ্লো লাইট */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-3 bg-[radial-gradient(ellipse_at_center,rgba(255,210,90,0.9),transparent_70%)] opacity-70"
+        />
+
+        <div className="relative mx-auto flex w-full max-w-[1700px] flex-col gap-2 py-2 pr-3 lg:flex-row lg:items-stretch lg:gap-0 lg:py-0 lg:pr-4">
+          {/* ---------- LEFT: BRAND PANEL ---------- */}
+          <Link
+            href="/"
+            aria-label={`${COMPANY.name} — Home`}
+            className="group relative flex shrink-0 items-center gap-3 self-start rounded-r-[48px] border-y-2 border-r-2 border-[#e0a820] bg-[linear-gradient(135deg,#031038_0%,#0a2f86_100%)] py-2 pl-3 pr-10 shadow-[0_0_18px_rgba(255,200,60,0.35),inset_0_0_20px_rgba(0,0,0,0.5)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-yellow-300 lg:my-2 lg:min-w-[420px]"
+          >
+            <span className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border-2 border-[#f3c443] bg-white shadow-[0_0_14px_rgba(255,210,90,0.7)] sm:h-[72px] sm:w-[72px]">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={64}
+                height={64}
+                priority
+                sizes="64px"
+                className="h-10 w-10 object-contain transition-transform duration-300 group-hover:scale-110 sm:h-[52px] sm:w-[52px]"
+              />
+            </span>
+            <span aria-hidden="true" className="h-12 w-[2px] bg-gradient-to-b from-transparent via-[#f3c443] to-transparent sm:h-14" />
+            <span className="flex min-w-0 flex-col leading-none">
+              <span className="truncate text-2xl font-black tracking-tight text-white drop-shadow-[0_2px_3px_rgba(0,0,0,0.6)] sm:text-[34px]">
+                Smart Family
+              </span>
+              <span className="mt-1 truncate bg-[linear-gradient(180deg,#fff7a8,#ffd22e_55%,#e09a00)] bg-clip-text text-lg font-black text-transparent drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)] sm:text-[25px]">
+                IT Solutions World
+              </span>
+            </span>
+          </Link>
+
+          {/* ---------- RIGHT: ACTIONS + NAV ---------- */}
+          <div className="flex min-w-0 flex-1 flex-col gap-2 lg:pl-3 lg:pt-2 lg:pb-2">
+            {/* টপ রো: Wishlist / Compare / BDT */}
+            <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+              <Link href="/wishlist" className={goldPill}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-[#3a1a1a]">
+                  <path d="M12 21s-8-5.3-8-11.2A4.8 4.8 0 0 1 12 7a4.8 4.8 0 0 1 8 2.8C20 15.7 12 21 12 21z" />
+                </svg>
+                Wishlist
+              </Link>
+              <Link href="/compare" className={goldPill}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-[#0a1f5c]" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3v18M5 21h14M5 7h14" />
+                  <path d="m5 7-3 7a3.5 3.5 0 0 0 6 0L5 7zM19 7l-3 7a3.5 3.5 0 0 0 6 0l-3-7z" />
+                </svg>
+                Compare
+              </Link>
+              <CurrencySwitcher />
+              <span className="hidden sm:inline-flex">
+                <ThemeSwitcher />
+              </span>
+            </div>
+
+            {/* বটম রো: ক্রিম নেভিগেশন বার + ভাষা */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              <nav
+                aria-label="Main"
+                className="relative flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1 rounded-full border-2 border-[#e0a820] bg-[linear-gradient(180deg,#fffdf2_0%,#fff4cc_100%)] py-1.5 pl-1.5 pr-4 shadow-[0_0_16px_rgba(255,200,60,0.5),inset_0_-3px_6px_rgba(200,150,30,0.25)] sm:gap-x-4"
+              >
+                <Link
+                  href="/"
+                  aria-label="Home"
+                  className={`${goldGradient} flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#3a2600] shadow-[0_0_12px_rgba(255,200,60,0.7),inset_0_2px_3px_rgba(255,255,255,0.7)] transition hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a1f5c]`}
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6 fill-[#3a2600]">
+                    <path d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3L12 3z" />
+                  </svg>
+                </Link>
+
+                <Divider />
+                <Link href="/" className={navLinkClass}>Home</Link>
+                {mainNav.map((n) => (
+                  <span key={n.href} className="contents">
+                    <Divider />
+                    <Link href={n.href} className={navLinkClass}>{n.label}</Link>
+                  </span>
+                ))}
+                <Divider />
+                <NavDropdown label="Services" items={serviceLinks} width="w-60" />
+                <Divider />
+                <NavDropdown label="Company" items={companyLinks} width="w-48" />
+                <Divider />
+                <Link href="/contact" className={navLinkClass}>Contact</Link>
+                <Divider />
+                {/* "Admin" লেখার জায়গায় এখন শুধু VIP বাল্ব */}
+                <VipBulb />
+              </nav>
+
+              {/* ভাষা পিল */}
+              <div className="shrink-0">
+                <LanguageSwitcher />
+              </div>
+              <span className="sm:hidden">
+                <ThemeSwitcher />
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const locale = await getLocale();
@@ -75,93 +312,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
       <body className="min-h-screen flex flex-col overflow-x-clip">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <NextIntlClientProvider locale={locale} messages={messages}>
-            
+
             {/* HEADER SECTION */}
-            <header className="border-b bg-white dark:bg-slate-900 dark:border-slate-800 sticky top-0 z-50 transition-colors">
-              <div className="w-full max-w-[1700px] mx-auto px-4 py-3 flex items-center justify-between gap-3">
-                <Link
-                  href="/"
-                  aria-label={`${COMPANY.name} — Home`}
-                  className="group flex min-w-0 items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-500"
-                >
-                  <Image
-                    src="/logo.png"
-                    alt=""
-                    width={44}
-                    height={44}
-                    priority
-                    sizes="44px"
-                    className="h-9 w-9 shrink-0 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105 sm:h-11 sm:w-11"
-                  />
-                  <span className="truncate text-lg sm:text-xl font-black text-blue-600 dark:text-blue-400">
-                    {COMPANY.name}
-                  </span>
-                  <span className="hidden sm:inline text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 font-semibold px-2 py-0.5 rounded">
-                    IT Solutions &amp; Software
-                  </span>
-                </Link>
-
-                <nav aria-label="Main" className="flex shrink-0 items-center gap-3 sm:gap-5 text-sm font-medium text-slate-600 dark:text-slate-300">
-                  <Link href="/" className={navLinkClass}>Home</Link>
-                  <Link href="/products" className={navLinkClass}>Products</Link>
-                  <Link href="/features" className={navLinkClass}>Features</Link>
-                  <Link href="/marketplace" className={navLinkClass}>Marketplace</Link>
-
-                  {/* SERVICES DROPDOWN */}
-                  <div className="group relative cursor-pointer py-1">
-                    <span className={`flex items-center gap-1 ${navLinkClass}`}>
-                      Services ▾
-                    </span>
-                    <div className="absolute left-0 top-full hidden w-60 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-xl group-hover:block">
-                      <Link href="/services/web-development" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        🌐 Web &amp; E-Commerce Dev
-                      </Link>
-                      <Link href="/services/erp-software" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        📦 ERP &amp; Business Software
-                      </Link>
-                      <Link href="/services/digital-marketing" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        📈 Digital Marketing &amp; SEO
-                      </Link>
-                      <Link href="/services/design-branding" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        🎨 Design, Branding &amp; IT
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* COMPANY DROPDOWN */}
-                  <div className="group relative cursor-pointer py-1">
-                    <span className={`flex items-center gap-1 ${navLinkClass}`}>
-                      Company ▾
-                    </span>
-                    <div className="absolute left-0 top-full hidden w-48 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-xl group-hover:block">
-                      <Link href="/about" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        🏢 About Us
-                      </Link>
-                      <Link href="/portfolio" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        💼 Portfolio
-                      </Link>
-                      <Link href="/team" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        👥 Our Team
-                      </Link>
-                      <Link href="/packages" className="block rounded-xl px-3 py-2 text-xs font-medium hover:bg-slate-100 dark:hover:bg-slate-800">
-                        🏷️ Packages / Price
-                      </Link>
-                    </div>
-                  </div>
-
-                  <Link href="/contact" className={navLinkClass}>Contact</Link>
-                  <Link href="/admin" className={navLinkClass}>Admin</Link>
-
-                  <LanguageSwitcher />
-                  <ThemeSwitcher />
-                </nav>
-              </div>
-            </header>
+            <VipHeader />
 
             {/* MAIN CONTENT */}
             <main className="flex-1 w-full">{children}</main>
 
-            {/* FLOATING CHAT WIDGET - এটি সব পেজে ভাসমান থাকবে */}
+            {/* FLOATING CHAT WIDGET */}
             <FloatingChat />
 
             {/* FOOTER SECTION */}
