@@ -6,13 +6,18 @@ smartfamily-app
 │  │  ├─ admin
 │  │  │  ├─ blog
 │  │  │  │  └─ [id]
+│  │  │  ├─ it-software
+│  │  │  │  └─ [id]
 │  │  │  ├─ login
+│  │  │  ├─ messages
 │  │  │  ├─ orders
 │  │  │  │  └─ [id]
 │  │  │  ├─ products
 │  │  │  │  └─ [id]
 │  │  │  └─ upload
 │  │  ├─ auth
+│  │  │  └─ login
+│  │  ├─ chat
 │  │  ├─ contact
 │  │  ├─ e-commerce
 │  │  ├─ order
@@ -86,9 +91,11 @@ smartfamily-app
 │  ├─ BlogClient.tsx
 │  ├─ Calculator.tsx
 │  ├─ ContactForm.tsx
+│  ├─ FaqSection.tsx
 │  ├─ FeatureExplorer.tsx
 │  ├─ FloatingChat.tsx
 │  ├─ LanguageSwitcher.tsx
+│  ├─ ShareButton.tsx
 │  ├─ SiteShell.tsx
 │  └─ ThemeSwitcher.tsx
 ├─ data
@@ -125,6 +132,7 @@ smartfamily-app
 ├─ models
 │  ├─ BlogPost.ts
 │  ├─ ContactMessage.ts
+│  ├─ ITSoftware.ts
 │  ├─ Order.ts
 │  ├─ Product.ts
 │  ├─ SheetData.ts
@@ -135,6 +143,7 @@ smartfamily-app
 ├─ package.json
 ├─ postcss.config.js
 ├─ public
+│  ├─ icon.png
 │  ├─ images
 │  │  ├─ alim-uddin.jpg
 │  │  ├─ family.jpg
