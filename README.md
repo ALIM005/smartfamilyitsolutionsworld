@@ -100,6 +100,7 @@ smartfamily-app
 │  ├─ FeatureExplorer.tsx
 │  ├─ FloatingChat.tsx
 │  ├─ LanguageSwitcher.tsx
+│  ├─ MobileMenu.tsx
 │  ├─ ShareButton.tsx
 │  ├─ SiteShell.tsx
 │  └─ ThemeSwitcher.tsx
